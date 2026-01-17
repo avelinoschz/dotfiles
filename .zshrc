@@ -1,29 +1,16 @@
-# zsh
-export CLICOLOR=1
+# Oh-My-Zsh Configuration
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME=""
+plugins=(git asdf)
+source $ZSH/oh-my-zsh.sh
 
-# tab-completion for git
-autoload -Uz compinit && compinit
+# GPG prompt
+export GPG_TTY=$(tty)
 
-# git branch
-autoload -Uz vcs_info
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
+# Git styling via oh-my-zsh
 setopt prompt_subst
-RPROMPT=\$vcs_info_msg_0_
-# PROMPT=\$vcs_info_msg_0_'%# '
-zstyle ':vcs_info:git:*' formats '%b'
-
-# nvm
-export NVM_DIR="$HOME/.nvm"
-  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
-# rbenv
-eval "$(rbenv init -)"
-
-# go-lang
-export PATH=${HOME}/go/bin:$PATH
-
-# plugins
-source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+PROMPT='%1~ $(git_prompt_info)%# '
+ZSH_THEME_GIT_PROMPT_PREFIX="%F{green}("
+ZSH_THEME_GIT_PROMPT_SUFFIX=") %f"
+ZSH_THEME_GIT_PROMPT_DIRTY="*"
+ZSH_THEME_GIT_PROMPT_CLEAN=""
