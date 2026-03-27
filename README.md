@@ -33,8 +33,8 @@ The zsh prompt displays git status indicators using oh-my-zsh's built-in functio
 | `⬇` | magenta | Behind remote (need to pull) |
 | `⬆⬇` | red | Diverged from remote |
 | `?` | red | Untracked files |
-| `+` | green | Staged files |
-| `!` | yellow | Unstaged modifications |
+| `+` | green | Staged new files |
+| `!` | yellow | Modified files (staged or unstaged) |
 | `»` | yellow | Renamed files |
 | `✗` | red | Deleted files |
 | `=` | red | Unmerged conflicts |
