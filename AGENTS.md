@@ -4,7 +4,7 @@ Guidelines for AI agents working in this repo.
 
 ## Repo Overview
 
-Personal macOS dotfiles for a single user. The goal is simplicity and portability — configs should work on a fresh machine with minimal dependencies.
+Personal dotfiles for a single user. The goal is simplicity and portability — configs should work on a fresh machine with minimal dependencies.
 
 ## Conventions
 

@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal configuration files and setup scripts for macOS.
+Personal configuration files and setup scripts.
 
 ## Contents
 
@@ -18,7 +18,7 @@ Personal configuration files and setup scripts for macOS.
 
 | Script | Description |
 | ------ | ----------- |
-| `setup.sh` | Fresh macOS setup: Homebrew, CLI tools, apps, oh-my-zsh, asdf |
+| `setup.sh` | Fresh setup: Homebrew, CLI tools, apps, oh-my-zsh, asdf |
 | `setup-keys.sh` | SSH and GPG key generation |
 | `sync.sh` | Sync `.zshrc` from dotfiles to home directory (shows diff, asks confirmation) |
 
