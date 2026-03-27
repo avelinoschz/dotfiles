@@ -9,7 +9,7 @@ export GPG_TTY=$(tty)
 
 # Git styling via oh-my-zsh
 setopt prompt_subst
-PROMPT='%1~ $(git_prompt_info)$(git_prompt_status) %# '
+PROMPT='%1~$(git_prompt_info)$(git_prompt_status) %# '
 
 # Branch display
 ZSH_THEME_GIT_PROMPT_PREFIX="%F{green}("
