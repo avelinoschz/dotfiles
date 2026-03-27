@@ -22,12 +22,19 @@ Personal dotfiles for a single user. The goal is simplicity and portability — 
 - All `ZSH_THEME_GIT_PROMPT_*` variables are defined in `.zshrc` directly — no theme file.
 - `ZSH_THEME_GIT_PROMPT_ADDED` (`+`) only fires for staged *new* files (`git add` on a new file). Staged modifications to existing files share `MODIFIED` (`!`) with unstaged mods — this is a limitation of oh-my-zsh's `git_prompt_status`. A custom function would be needed to distinguish them.
 
-### `sync.sh`
+### `sync.sh` — repo → `$HOME`
 
-- One-way sync: dotfiles repo → `$HOME`. Never the reverse.
+- One-way sync: dotfiles repo → `$HOME`.
 - Creates a timestamped backup (`~/.zshrc.bak.YYYYMMDD_HHMMSS`) before every apply.
 - Flags: `--restore` (apply most recent backup), `--clean` (list and delete all backups).
 - If new dotfiles are added to the repo and need syncing, extend `sync.sh` to handle them.
+
+### `pull.sh` — `$HOME` → repo
+
+- Reverse direction: captures current state from `$HOME` into the dotfiles repo.
+- Operates on a list defined in `FILES=()` — add entries there to pull more files.
+- Currently pulls: `.tool-versions`.
+- No backup needed on the repo side — git history is the safety net.
 
 ### Machine-specific config
 

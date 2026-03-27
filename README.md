@@ -21,6 +21,7 @@ Personal configuration files and setup scripts.
 | `setup.sh` | Fresh setup: Homebrew, CLI tools, apps, oh-my-zsh, asdf |
 | `setup-keys.sh` | SSH and GPG key generation |
 | `sync.sh` | Sync `.zshrc` from dotfiles to home directory (shows diff, asks confirmation) |
+| `pull.sh` | Pull updated dotfiles from `$HOME` into the repo (currently: `.tool-versions`) |
 
 ## Git Prompt
 
@@ -56,6 +57,9 @@ Example: `dotfiles (main)⬆!? %`
 
 # List and delete all backups
 ./sync.sh --clean
+
+# Pull updated dotfiles from $HOME into the repo
+./pull.sh
 ```
 
 Backups are saved as `~/.zshrc.bak.YYYYMMDD_HHMMSS` on every apply, so all previous versions are preserved.
