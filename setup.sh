@@ -40,8 +40,13 @@ brew install --cask github
 
 # AI assistants
 brew install --cask claude
-brew install --cask claude-code
 brew install --cask chatgpt
+
+brew install --cask claude-code
+brew install gemini-cli
+brew install codex
+brew install opencode
+brew install copilot-cli
 
 # Install Oh My Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
