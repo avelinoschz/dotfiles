@@ -7,6 +7,9 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 FILES=(
     ".tool-versions"
+    # ".vimrc"
+    # ".claude/settings.json"
+    # ".claude/statusline-command.sh"
 )
 
 any_updated=0

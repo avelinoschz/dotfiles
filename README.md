@@ -9,6 +9,7 @@ Personal configuration files and setup scripts.
 | `.zshrc` | Zsh configuration with Oh-My-Zsh, git prompt styling |
 | `.vimrc` | Vim settings (syntax, line numbers, dark theme) |
 | `.tool-versions` | asdf runtime versions (Python, Node.js, Go) |
+| `.claude/` | Claude Code settings and statusline script |
 | `.config/` | XDG config directory (bat theme) |
 | `.gnupg/` | GPG agent configuration |
 | `.ssh/` | SSH client configuration |
