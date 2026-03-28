@@ -36,6 +36,3 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%F{red}?%f"
 # Special states
 ZSH_THEME_GIT_PROMPT_STASHED="%F{blue}\$%f"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%F{red}=%f"
-
-# Added by Antigravity
-export PATH="/Users/avelino/.antigravity/antigravity/bin:$PATH"

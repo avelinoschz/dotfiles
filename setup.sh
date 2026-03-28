@@ -14,6 +14,7 @@ brew install gnupg
 brew install git
 brew install tmux
 brew install pinentry-mac
+brew install mole
 
 # Terminal and editors
 brew install neovim
