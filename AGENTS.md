@@ -14,6 +14,7 @@ Personal dotfiles for a single user. The goal is simplicity and portability — 
 - All scripts must be runnable from any directory (use `SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"` for relative file references).
 - Destructive operations must always ask for confirmation with `[y/N]` defaulting to No.
 - Show a diff before overwriting any file.
+- Comments in scripts and tracked config files must always be written in English.
 
 ### `.zshrc` / Shell Prompt
 
