@@ -43,11 +43,26 @@ brew install --cask github
 brew install --cask claude
 brew install --cask chatgpt
 
-brew install --cask claude-code
-brew install gemini-cli
+# AI CLI tools
 brew install codex
+brew install gemini-cli
 brew install opencode
 brew install copilot-cli
+
+# Native installer for Claude to have always the latest version, as the Homebrew version is often outdated.
+curl -fsSL https://claude.ai/install.sh | bash
+
+# Uninstall Claude Code (native installer)
+# rm -f ~/.local/bin/claude
+# rm -rf ~/.local/share/claude
+
+# Optional: remove all settings, history, MCP configs
+# rm -rf ~/.claude
+# rm -f ~/.claude.json
+
+# Un detalle: asegurate de que ~/.local/bin este en tu $PATH despues de la instalacion. El
+# instalador normalmente lo agrega automaticamente a tu shell config (~/.zshrc), pero vale la pena
+# verificarlo.
 
 # Install Oh My Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
