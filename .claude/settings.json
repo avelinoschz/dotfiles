@@ -1,5 +1,4 @@
 {
-  "effortLevel": "medium",
   "permissions": {
     "allow": [
       "Bash(go mod:*)"
