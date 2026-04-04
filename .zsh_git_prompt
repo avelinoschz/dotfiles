@@ -35,37 +35,12 @@ _git_prompt_info() {
 
 # _git_prompt_status: shows indicators for remote drift and local file states.
 # Each indicator is a colored symbol defined as a ZSH_THEME_GIT_PROMPT_* variable.
-# Output order: ahead(↑) · behind(↓) · diverged(↑↓) · stash($) ·
-#               added(+) · modified(!) · renamed(») · deleted(✗) · untracked(?) · unmerged(=)
+# Output order follows Starship convention:
+#   unmerged(=) · stash($) · deleted(✘) · renamed(») · modified(!) · added(+) · untracked(?) · ahead(⇡) · behind(⇣)
 _git_prompt_status() {
   # Exit immediately if we are not inside a git repo.
   # 'git rev-parse --git-dir' locates the .git directory; we discard its output.
   git rev-parse --git-dir &>/dev/null || return 0
-
-  local result=""
-
-  # ── Remote tracking (ahead / behind / diverged) ────────────────────────────
-  # 'git rev-list --count --left-right A...B' counts commits reachable from A
-  # but not B (left, printed first) and from B but not A (right, printed second).
-  # Here A=upstream, B=HEAD, so: left=behind (remote has these), right=ahead (we have these).
-  # Output is "<behind>\t<ahead>". The 2>/dev/null handles repos with no upstream set.
-  local counts
-  counts=$(git rev-list --count --left-right "@{upstream}...HEAD" 2>/dev/null)
-  if [[ -n "$counts" ]]; then
-    # ${var%%pattern} removes the longest match of pattern from the right.
-    # ${var##pattern} removes the longest match of pattern from the left.
-    # $'\t' is a literal tab character.
-    local behind="${counts%%$'\t'*}"
-    local ahead="${counts##*$'\t'}"
-    (( behind > 0 && ahead  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_DIVERGED}"
-    (( ahead  > 0 && behind == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_AHEAD}"
-    (( behind > 0 && ahead  == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_BEHIND}"
-  fi
-
-  # ── Stash ──────────────────────────────────────────────────────────────────
-  # Git stores stash entries under the ref refs/stash.
-  # 'git rev-parse --verify' checks if a ref exists without printing anything.
-  git rev-parse --verify refs/stash &>/dev/null && result+="${ZSH_THEME_GIT_PROMPT_STASHED}"
 
   # ── File-level statuses ────────────────────────────────────────────────────
   # 'git status --porcelain' outputs one line per changed file in a stable
@@ -93,14 +68,42 @@ _git_prompt_status() {
     [[ "${x}${y}" == "??" ]]         && (( untracked++ ))
   done < <(git status --porcelain 2>/dev/null)
 
+  # ── Stash ──────────────────────────────────────────────────────────────────
+  # Git stores stash entries under the ref refs/stash.
+  # 'git rev-parse --verify' checks if a ref exists without printing anything.
+  local stashed=0
+  git rev-parse --verify refs/stash &>/dev/null && stashed=1
+
+  # ── Remote tracking (ahead / behind / diverged) ────────────────────────────
+  # 'git rev-list --count --left-right A...B' counts commits reachable from A
+  # but not B (left, printed first) and from B but not A (right, printed second).
+  # Here A=upstream, B=HEAD, so: left=behind (remote has these), right=ahead (we have these).
+  # Output is "<behind>\t<ahead>". The 2>/dev/null handles repos with no upstream set.
+  local ahead=0 behind=0
+  local counts
+  counts=$(git rev-list --count --left-right "@{upstream}...HEAD" 2>/dev/null)
+  if [[ -n "$counts" ]]; then
+    # ${var%%pattern} removes the longest match of pattern from the right.
+    # ${var##pattern} removes the longest match of pattern from the left.
+    # $'\t' is a literal tab character.
+    behind="${counts%%$'\t'*}"
+    ahead="${counts##*$'\t'}"
+  fi
+
+  # ── Build result in Starship order ─────────────────────────────────────────
   # Append each symbol only if the counter is greater than zero.
   # (( expr )) evaluates arithmetic; a non-zero result is truthy in zsh.
-  (( added     > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_ADDED}"
-  (( modified  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_MODIFIED}"
-  (( renamed   > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_RENAMED}"
-  (( deleted   > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_DELETED}"
-  (( untracked > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_UNTRACKED}"
+  local result=""
   (( unmerged  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_UNMERGED}"
+  (( stashed   > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_STASHED}"
+  (( deleted   > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_DELETED}"
+  (( renamed   > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_RENAMED}"
+  (( modified  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_MODIFIED}"
+  (( added     > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_ADDED}"
+  (( untracked > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_UNTRACKED}"
+  (( behind > 0 && ahead  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_DIVERGED}${ahead}%F{red}⇣%f${behind}"
+  (( ahead  > 0 && behind == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_AHEAD}${ahead}"
+  (( behind > 0 && ahead  == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_BEHIND}${behind}"
 
   echo "$result"
 }
