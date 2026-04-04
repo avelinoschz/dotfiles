@@ -50,3 +50,6 @@ setopt prompt_subst
 # PROMPT='%1~$(git_prompt_info)$(git_prompt_status) %# '  # oh-my-zsh functions
 source "$HOME/.zsh_git_prompt"
 PROMPT='%1~$(_git_prompt_info)$(_git_prompt_status) %# '
+
+# Show system info on terminal startup
+fastfetch

@@ -45,6 +45,16 @@ git config commit.template .gitmessage
 - Do not introduce Nerd Fonts or special Unicode that requires font installation. The current symbols (`⬆ ⬇ ? + ! » ✗ = $`) render in any terminal.
 - All `ZSH_THEME_GIT_PROMPT_*` variables are defined in `.zshrc` directly — `.zsh_git_prompt` only defines the functions that consume them.
 
+#### Load order in `.zshrc`
+
+When adding anything to `.zshrc`, place it in the optimal position prioritizing startup speed:
+
+1. **PATH and env vars** — first; everything else depends on these being set
+2. **Completions** (`compinit`) — after PATH so binaries are discoverable
+3. **Shell options and env** (`GPG_TTY`, `setopt`, etc.)
+4. **Prompt variables and sourced files** — before the `PROMPT=` assignment
+5. **Side-effect commands** (`fastfetch`, motd, etc.) — always last; must never block shell config or be a dependency of anything else
+
 ### Sourced zsh files
 
 - Any `.zsh_*` file that is sourced (not executed directly) must start with `#!/bin/zsh`. When sourced, zsh ignores the shebang (it's just a comment), but editors like VSCode rely on it for syntax highlighting.

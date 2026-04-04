@@ -13,6 +13,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Core CLI tools
 brew install bat
+brew install fastfetch
 brew install tree
 brew install gnupg
 brew install git

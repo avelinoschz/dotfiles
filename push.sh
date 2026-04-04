@@ -30,6 +30,8 @@ FILES=(
     ".zsh_git_prompt"
     ".zprofile"
     ".tool-versions"
+    ".config/ghostty/config"
+    ".config/fastfetch/config.jsonc"
 )
 
 # ─── usage ───────────────────────────────────────────────────────────────────
