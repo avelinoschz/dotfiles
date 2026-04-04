@@ -12,19 +12,21 @@ Personal dotfiles for a single user. The goal is simplicity and portability — 
 
 Use **conventional commits** format:
 
-```
+```text
 <type>: <short summary (imperative, present tense)>
 ```
 
 Allowed types: `feat` | `fix` | `chore` | `docs` | `refactor` | `style`
 
 Examples:
+
 - `feat: add ghostty terminal config`
 - `fix: correct zsh PATH export order`
 - `chore: update tool versions in .tool-versions`
 - `docs: update README setup instructions`
 
 The `.gitmessage` file in this repo serves as a `git commit` template. Enable it with:
+
 ```bash
 git config commit.template .gitmessage
 ```
