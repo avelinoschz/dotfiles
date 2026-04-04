@@ -59,6 +59,16 @@ When adding anything to `.zshrc`, place it in the optimal position prioritizing 
 
 - Any `.zsh_*` file that is sourced (not executed directly) must start with `#!/bin/zsh`. When sourced, zsh ignores the shebang (it's just a comment), but editors like VSCode rely on it for syntax highlighting.
 
+### VS Code Extensions
+
+- Extensions are tracked in `vscode-extensions.txt` (one extension ID per line).
+- To update it after installing or removing extensions in VS Code, run:
+  ```bash
+  code --list-extensions > vscode-extensions.txt
+  ```
+- `setup.sh` reads this file and installs all extensions on a fresh machine.
+- Blank lines and `#` comments in the file are ignored by the install loop.
+
 ### `push.sh` — repo → `$HOME`
 
 - One-way sync: dotfiles repo → `$HOME`.
@@ -81,6 +91,12 @@ When adding anything to `.zshrc`, place it in the optimal position prioritizing 
 
 - Keep machine-specific paths (e.g. tool installer PATH exports) in the tracked `.zshrc` so they survive syncs.
 - Avoid hardcoding paths that would differ across machines — prefer `$HOME` over `/Users/username`.
+
+### Documentation
+
+- Every instruction added to a config file (`.zshrc`, shell scripts, etc.) must include a comment explaining what it does and why. This applies to new `source` calls, `export` statements, tool initializations, and any non-obvious line.
+- Comments must be in English (consistent with the existing convention in scripts and tracked config files).
+- A comment should answer: *what does this do?* and, if not obvious, *why is it here?*
 
 ## What to Avoid
 

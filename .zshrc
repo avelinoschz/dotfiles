@@ -51,5 +51,13 @@ setopt prompt_subst
 source "$HOME/.zsh_git_prompt"
 PROMPT='%1~$(_git_prompt_info)$(_git_prompt_status) %# '
 
+# Fish-like autosuggestions — suggests commands from history as you type (grey ghost text).
+# Accept with → or End. Installed via: brew install zsh-autosuggestions
+source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+# Fish-like syntax highlighting — colors commands as you type: green if valid, red if not.
+# Must be sourced after all other plugins. Installed via: brew install zsh-syntax-highlighting
+source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
 # Show system info on terminal startup
 fastfetch

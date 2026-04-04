@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
@@ -14,6 +16,8 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # Core CLI tools
 brew install bat
 brew install fastfetch
+brew install zsh-autosuggestions
+brew install zsh-syntax-highlighting
 brew install tree
 brew install gnupg
 brew install git
@@ -90,3 +94,14 @@ asdf plugin add golang
 asdf install python 3.14.2
 asdf install nodejs 24.13.0
 asdf install go 1.25.5
+
+# Install VS Code extensions from the tracked list
+# Each line in vscode-extensions.txt is one extension ID (e.g. golang.go).
+# --force ensures the latest version is installed even if already present.
+if command -v code &>/dev/null && [ -f "$SCRIPT_DIR/vscode-extensions.txt" ]; then
+    while IFS= read -r ext; do
+        # Skip blank lines and comments (lines starting with #)
+        [[ -z "$ext" || "$ext" == \#* ]] && continue
+        code --install-extension "$ext" --force
+    done < "$SCRIPT_DIR/vscode-extensions.txt"
+fi
