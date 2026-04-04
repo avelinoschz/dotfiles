@@ -5,6 +5,7 @@ anthropic.claude-code
 catppuccin.catppuccin-vsc
 davidanson.vscode-markdownlint
 eamodio.gitlens
+editorconfig.editorconfig
 github.copilot-chat
 github.github-vscode-theme
 github.vscode-github-actions
