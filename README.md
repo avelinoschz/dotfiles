@@ -1,6 +1,29 @@
 # dotfiles
 
-Personal configuration files and setup scripts.
+![macOS](https://img.shields.io/badge/macOS-Apple%20Silicon-black?logo=apple)
+![License](https://img.shields.io/github/license/avelinoschz/dotfiles)
+
+Opinionated macOS developer environment managed via Homebrew and asdf — shell, editors, terminal, and tooling configs for a consistent setup across machines.
+
+## Prerequisites
+
+```bash
+# Install Xcode Command Line Tools before running any script
+xcode-select --install
+```
+
+## Quick Start
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/avelinoschz/dotfiles.git ~/dotfiles && cd ~/dotfiles
+
+# 2. Run the bootstrap (installs Homebrew, tools, apps, oh-my-zsh, asdf)
+./setup.sh
+
+# 3. Apply dotfiles to $HOME
+./push.sh --all
+```
 
 ## Contents
 
@@ -11,6 +34,7 @@ Personal configuration files and setup scripts.
 | `.vimrc` | Vim settings (syntax, line numbers, dark theme) |
 | `.tool-versions` | asdf runtime versions (Python, Node.js, Go) |
 | `.claude/` | Claude Code settings and statusline script |
+| `AGENTS.md` | AI agent conventions for this repo |
 | `.config/` | XDG config directory (bat theme) |
 | `.gnupg/` | GPG agent configuration |
 | `.ssh/` | SSH client configuration |
@@ -73,3 +97,7 @@ Example: `dotfiles (main)⬆!? %`
 ```
 
 Backups are saved as `~/<file>.bak.YYYYMMDD_HHMMSS` on every apply, so all previous versions are preserved.
+
+## License
+
+MIT © [avelinoschz](https://github.com/avelinoschz)

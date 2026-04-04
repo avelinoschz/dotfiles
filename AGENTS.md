@@ -8,6 +8,27 @@ Personal dotfiles for a single user. The goal is simplicity and portability — 
 
 ## Conventions
 
+### Commit Messages
+
+Use **conventional commits** format:
+
+```
+<type>: <short summary (imperative, present tense)>
+```
+
+Allowed types: `feat` | `fix` | `chore` | `docs` | `refactor` | `style`
+
+Examples:
+- `feat: add ghostty terminal config`
+- `fix: correct zsh PATH export order`
+- `chore: update tool versions in .tool-versions`
+- `docs: update README setup instructions`
+
+The `.gitmessage` file in this repo serves as a `git commit` template. Enable it with:
+```bash
+git config commit.template .gitmessage
+```
+
 ### Scripts
 
 - **Use bash scripts, not a Makefile.** `setup.sh` runs on a fresh machine before Homebrew or Xcode CLI tools are installed. Bash is the only guaranteed runtime.

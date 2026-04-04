@@ -1,0 +1,13 @@
+# <type>: <short summary (imperative, present tense)>
+#
+# Types: feat | fix | chore | docs | refactor | style
+#
+# Examples:
+#   feat: add ghostty terminal config
+#   fix: correct zsh PATH export order
+#   chore: update tool versions in .tool-versions
+#   docs: update README setup instructions
+#   refactor: simplify sync.sh backup logic
+#   style: align zshrc prompt variable formatting
+#
+# Body (optional): explain *why*, not *what*
