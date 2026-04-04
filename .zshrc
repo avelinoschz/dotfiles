@@ -1,11 +1,14 @@
 # Deduplicate PATH entries (zsh built-in)
 typeset -U path
 
-# Oh-My-Zsh Configuration
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME=""
-plugins=(asdf)
-source $ZSH/oh-my-zsh.sh
+# PATH
+# Suggested by Claude Code
+export PATH="$HOME/.local/bin:$PATH"
+# asdf — added by asdf getting started guide
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
+# Completions
+autoload -Uz compinit && compinit
 
 # GPG prompt
 # Tell GPG which terminal to use for interactive prompts.
@@ -13,12 +16,7 @@ source $ZSH/oh-my-zsh.sh
 # so pinentry can ask for the passphrase in the current terminal session.
 export GPG_TTY=$(tty)
 
-# Git prompt
-setopt prompt_subst
-# PROMPT='%1~$(git_prompt_info)$(git_prompt_status) %# '  # oh-my-zsh functions
-source "$HOME/.zsh_git_prompt"
-PROMPT='%1~$(_git_prompt_info)$(_git_prompt_status) %# '
-
+# Git prompt styling
 # Branch display
 ZSH_THEME_GIT_PROMPT_PREFIX="%F{green}("
 ZSH_THEME_GIT_PROMPT_SUFFIX=")%f"
@@ -45,6 +43,8 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%F{red}?%f"
 ZSH_THEME_GIT_PROMPT_STASHED="%F{blue}\$%f"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%F{red}=%f"
 
-# Added local bin to PATH for user-installed tools
-# Suggested by Claude Code native installer
-PATH="$HOME/.local/bin:$PATH"
+# Git prompt
+setopt prompt_subst
+# PROMPT='%1~$(git_prompt_info)$(git_prompt_status) %# '  # oh-my-zsh functions
+source "$HOME/.zsh_git_prompt"
+PROMPT='%1~$(_git_prompt_info)$(_git_prompt_status) %# '
