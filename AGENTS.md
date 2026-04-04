@@ -51,7 +51,8 @@ git config commit.template .gitmessage
 - One-way sync: dotfiles repo → `$HOME`.
 - Creates a timestamped backup (`~/<file>.bak.YYYYMMDD_HHMMSS`) before every apply.
 - Flags: `--restore` (apply most recent backup), `--clean` (list and delete all backups).
-- If new dotfiles are added to the repo and need syncing, extend the `FILES=()` array in `push.sh`.
+- Files tracked here are **manually maintained by the owner** — large config files (e.g. `.zshrc`) that are easier to edit visually in the repo rather than directly in `$HOME`.
+- If a new dotfile fits this profile (owner edits it by hand, wants a repo-side copy as the source of truth), extend the `FILES=()` array in `push.sh`.
 
 ### `pull.sh` — `$HOME` → repo
 
@@ -59,6 +60,9 @@ git config commit.template .gitmessage
 - Operates on a list defined in `FILES=()` — add entries there to pull more files.
 - Currently pulls: `.gitconfig`, `.zprofile`, `.claude/settings.json`, `.claude/statusline-command.sh`.
 - No backup needed on the repo side — git history is the safety net.
+- Files tracked here are **managed automatically by their respective tools** (e.g. git, Claude) — the owner does not edit them by hand. The repo copy exists only to preserve them across machines.
+- If a new dotfile fits this profile (a tool writes/updates it, not the owner directly), extend the `FILES=()` array in `pull.sh`.
+- **Do not add the same file to both scripts.** Choose based on who controls the file: owner → `push.sh`, tool → `pull.sh`.
 
 ### Machine-specific config
 
