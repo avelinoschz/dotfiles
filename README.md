@@ -7,6 +7,7 @@ Personal configuration files and setup scripts.
 | File/Directory | Description |
 | -------------- | ----------- |
 | `.zshrc` | Zsh configuration with Oh-My-Zsh, git prompt styling |
+| `.zprofile` | Login shell config: Homebrew PATH setup |
 | `.vimrc` | Vim settings (syntax, line numbers, dark theme) |
 | `.tool-versions` | asdf runtime versions (Python, Node.js, Go) |
 | `.claude/` | Claude Code settings and statusline script |
@@ -21,8 +22,8 @@ Personal configuration files and setup scripts.
 | ------ | ----------- |
 | `setup.sh` | Fresh setup: Homebrew, CLI tools, apps, oh-my-zsh, asdf |
 | `setup-keys.sh` | SSH and GPG key generation |
-| `sync.sh` | Sync `.zshrc` from dotfiles to home directory (shows diff, asks confirmation) |
-| `pull.sh` | Pull updated dotfiles from `$HOME` into the repo (currently: `.tool-versions`) |
+| `push.sh` | Apply dotfiles from repo to `$HOME` (shows diff, asks confirmation per file) |
+| `pull.sh` | Capture dotfiles from `$HOME` into the repo |
 
 ## Git Prompt
 
@@ -50,17 +51,25 @@ Example: `dotfiles (main)⬆!? %`
 # Fresh machine setup
 ./setup.sh
 
-# Sync zshrc changes (shows diff and asks for confirmation)
-./sync.sh
+# Apply dotfiles to $HOME (shows diff and asks for confirmation)
+./push.sh --all
 
-# Restore ~/.zshrc from the most recent timestamped backup
-./sync.sh --restore
+# Apply a single file
+./push.sh .zshrc
+
+# Restore from the most recent backup
+./push.sh --restore --all
+./push.sh --restore .zshrc
 
 # List and delete all backups
-./sync.sh --clean
+./push.sh --clean --all
+./push.sh --clean .zshrc
 
-# Pull updated dotfiles from $HOME into the repo
-./pull.sh
+# Capture current dotfiles from $HOME into the repo
+./pull.sh --all
+
+# Capture a single file
+./pull.sh .zprofile
 ```
 
-Backups are saved as `~/.zshrc.bak.YYYYMMDD_HHMMSS` on every apply, so all previous versions are preserved.
+Backups are saved as `~/<file>.bak.YYYYMMDD_HHMMSS` on every apply, so all previous versions are preserved.

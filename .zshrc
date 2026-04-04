@@ -1,3 +1,6 @@
+# Deduplicate PATH entries (zsh built-in)
+typeset -U path
+
 # Oh-My-Zsh Configuration
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""
@@ -8,7 +11,6 @@ source $ZSH/oh-my-zsh.sh
 # Tell GPG which terminal to use for interactive prompts.
 # This avoids issues when signing commits/tags or decrypting from the shell,
 # so pinentry can ask for the passphrase in the current terminal session.
-export GPG_TTY=$(tty)
 export GPG_TTY=$(tty)
 
 # Git styling via oh-my-zsh

@@ -3,8 +3,12 @@
 # Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-echo >> ~/.zprofile
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+# After installing, Homebrew prints this exact command and asks you to run it.
+# It adds brew to PATH by writing a line to ~/.zprofile.
+# The grep -qF guard makes this idempotent: if the line is already there
+# (e.g. running setup.sh a second time), it won't be added again.
+grep -qF 'brew shellenv' ~/.zprofile 2>/dev/null || \
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Core CLI tools
