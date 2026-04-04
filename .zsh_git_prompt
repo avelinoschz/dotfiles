@@ -2,6 +2,13 @@
 # .zsh_git_prompt — Git prompt functions for zsh.
 # Sourced from .zshrc. The visual output is controlled by the
 # ZSH_THEME_GIT_PROMPT_* variables defined in .zshrc.
+#
+# Performance note: these functions call 'git' on every prompt render.
+# On normal repos this is fast (~10-30ms). On very large monorepos,
+# 'git status --porcelain' can be slow and cause noticeable lag after
+# each command. If that happens, the fix is to move the git calls into
+# a precmd hook so they run once per prompt instead of being evaluated
+# inline, or to add result caching keyed on the git index mtime.
 
 # _git_branch: resolves the name of the current branch.
 # - 'git symbolic-ref --short HEAD' returns the branch name (e.g. "main").
