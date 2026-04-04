@@ -23,6 +23,9 @@ git clone https://github.com/avelinoschz/dotfiles.git ~/dotfiles && cd ~/dotfile
 
 # 3. Apply dotfiles to $HOME
 ./push.sh --all
+
+# 4. (Optional) Enable commit message template
+git config commit.template .gitmessage
 ```
 
 ## Contents
