@@ -1,0 +1,99 @@
+#!/bin/zsh
+# .zsh_git_prompt — Git prompt functions for zsh.
+# Sourced from .zshrc. The visual output is controlled by the
+# ZSH_THEME_GIT_PROMPT_* variables defined in .zshrc.
+
+# _git_branch: resolves the name of the current branch.
+# - 'git symbolic-ref --short HEAD' returns the branch name (e.g. "main").
+#   It fails (non-zero exit) in detached HEAD state (e.g. after git checkout <sha>).
+# - The || chain falls back to 'git rev-parse --short HEAD', which returns
+#   a short commit SHA (e.g. "a1b2c3d") — useful to know where you are.
+# - If both fail (not a git repo), the function returns 1 and prints nothing.
+# - '2>/dev/null' silences error messages from git.
+_git_branch() {
+  local branch
+  branch=$(git symbolic-ref --short HEAD 2>/dev/null) ||
+  branch=$(git rev-parse --short HEAD 2>/dev/null) || return 1
+  echo "$branch"
+}
+
+# _git_prompt_info: wraps the branch name with the prefix/suffix colors.
+# Reads ZSH_THEME_GIT_PROMPT_PREFIX and ZSH_THEME_GIT_PROMPT_SUFFIX from .zshrc.
+# Outputs nothing if not in a git repo (|| return 0 exits cleanly).
+_git_prompt_info() {
+  local branch
+  branch=$(_git_branch) || return 0
+  echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${branch}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+}
+
+# _git_prompt_status: shows indicators for remote drift and local file states.
+# Each indicator is a colored symbol defined as a ZSH_THEME_GIT_PROMPT_* variable.
+# Output order: ahead(↑) · behind(↓) · diverged(↑↓) · stash($) ·
+#               added(+) · modified(!) · renamed(») · deleted(✗) · untracked(?) · unmerged(=)
+_git_prompt_status() {
+  # Exit immediately if we are not inside a git repo.
+  # 'git rev-parse --git-dir' locates the .git directory; we discard its output.
+  git rev-parse --git-dir &>/dev/null || return 0
+
+  local result=""
+
+  # ── Remote tracking (ahead / behind / diverged) ────────────────────────────
+  # 'git rev-list --count --left-right A...B' counts commits reachable from A
+  # but not B (left, printed first) and from B but not A (right, printed second).
+  # Here A=upstream, B=HEAD, so: left=behind (remote has these), right=ahead (we have these).
+  # Output is "<behind>\t<ahead>". The 2>/dev/null handles repos with no upstream set.
+  local counts
+  counts=$(git rev-list --count --left-right "@{upstream}...HEAD" 2>/dev/null)
+  if [[ -n "$counts" ]]; then
+    # ${var%%pattern} removes the longest match of pattern from the right.
+    # ${var##pattern} removes the longest match of pattern from the left.
+    # $'\t' is a literal tab character.
+    local behind="${counts%%$'\t'*}"
+    local ahead="${counts##*$'\t'}"
+    (( behind > 0 && ahead  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_DIVERGED}"
+    (( ahead  > 0 && behind == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_AHEAD}"
+    (( behind > 0 && ahead  == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_BEHIND}"
+  fi
+
+  # ── Stash ──────────────────────────────────────────────────────────────────
+  # Git stores stash entries under the ref refs/stash.
+  # 'git rev-parse --verify' checks if a ref exists without printing anything.
+  git rev-parse --verify refs/stash &>/dev/null && result+="${ZSH_THEME_GIT_PROMPT_STASHED}"
+
+  # ── File-level statuses ────────────────────────────────────────────────────
+  # 'git status --porcelain' outputs one line per changed file in a stable
+  # machine-readable format: "XY filename"
+  #   X = index status   (what is staged / will go into the next commit)
+  #   Y = worktree status (what changed in the working directory vs index)
+  # Common codes: A=added, M=modified, R=renamed, D=deleted, ?=untracked
+  # Conflict codes (both X and Y set): DD, AU, UD, UA, DU, AA, UU
+  local added=0 modified=0 renamed=0 deleted=0 untracked=0 unmerged=0
+
+  # 'while IFS= read -r line' reads each line from git status.
+  # The '< <(...)' at the end feeds the output of git status into the loop
+  # via process substitution, keeping all variables in the current shell scope.
+  while IFS= read -r line; do
+    # ${line:0:1} = character at offset 0 (X), ${line:1:1} = offset 1 (Y).
+    local x="${line:0:1}" y="${line:1:1}"
+
+    case "${x}${y}" in
+      DD|AU|UD|UA|DU|AA|UU) (( unmerged++  )) ;;
+    esac
+    [[ "$x" == "A" ]]                && (( added++     ))
+    [[ "$x" == "M" || "$y" == "M" ]] && (( modified++  ))
+    [[ "$x" == "R" ]]                && (( renamed++   ))
+    [[ "$x" == "D" || "$y" == "D" ]] && (( deleted++   ))
+    [[ "${x}${y}" == "??" ]]         && (( untracked++ ))
+  done < <(git status --porcelain 2>/dev/null)
+
+  # Append each symbol only if the counter is greater than zero.
+  # (( expr )) evaluates arithmetic; a non-zero result is truthy in zsh.
+  (( added     > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_ADDED}"
+  (( modified  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_MODIFIED}"
+  (( renamed   > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_RENAMED}"
+  (( deleted   > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_DELETED}"
+  (( untracked > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_UNTRACKED}"
+  (( unmerged  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_UNMERGED}"
+
+  echo "$result"
+}

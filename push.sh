@@ -27,6 +27,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Parentheses define a bash array; each space-separated string is one element.
 FILES=(
     ".zshrc"
+    ".zsh_git_prompt"
     ".zprofile"
     ".tool-versions"
 )

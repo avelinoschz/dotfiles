@@ -13,9 +13,11 @@ source $ZSH/oh-my-zsh.sh
 # so pinentry can ask for the passphrase in the current terminal session.
 export GPG_TTY=$(tty)
 
-# Git styling via oh-my-zsh
+# Git prompt
 setopt prompt_subst
-PROMPT='%1~$(git_prompt_info)$(git_prompt_status) %# '
+# PROMPT='%1~$(git_prompt_info)$(git_prompt_status) %# '  # oh-my-zsh functions
+source "$HOME/.zsh_git_prompt"
+PROMPT='%1~$(_git_prompt_info)$(_git_prompt_status) %# '
 
 # Branch display
 ZSH_THEME_GIT_PROMPT_PREFIX="%F{green}("

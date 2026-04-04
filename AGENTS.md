@@ -41,10 +41,13 @@ git config commit.template .gitmessage
 
 ### `.zshrc` / Shell Prompt
 
-- Git prompt uses **oh-my-zsh built-in functions only**: `git_prompt_info` and `git_prompt_status`.
+- Git prompt uses **pure zsh functions** defined in `.zsh_git_prompt` (sourced from `.zshrc`): `_git_prompt_info` and `_git_prompt_status`.
 - Do not introduce Nerd Fonts or special Unicode that requires font installation. The current symbols (`⬆ ⬇ ? + ! » ✗ = $`) render in any terminal.
-- All `ZSH_THEME_GIT_PROMPT_*` variables are defined in `.zshrc` directly — no theme file.
-- `ZSH_THEME_GIT_PROMPT_ADDED` (`+`) only fires for staged *new* files (`git add` on a new file). Staged modifications to existing files share `MODIFIED` (`!`) with unstaged mods — this is a limitation of oh-my-zsh's `git_prompt_status`. A custom function would be needed to distinguish them.
+- All `ZSH_THEME_GIT_PROMPT_*` variables are defined in `.zshrc` directly — `.zsh_git_prompt` only defines the functions that consume them.
+
+### Sourced zsh files
+
+- Any `.zsh_*` file that is sourced (not executed directly) must start with `#!/bin/zsh`. When sourced, zsh ignores the shebang (it's just a comment), but editors like VSCode rely on it for syntax highlighting.
 
 ### `push.sh` — repo → `$HOME`
 
