@@ -78,3 +78,4 @@ git config commit.template .gitmessage
 - Don't add dependencies that require installation before `setup.sh` runs.
 - Don't make `push.sh` or any script apply changes silently without user confirmation.
 - Don't add oh-my-zsh themes that require external font packages.
+- Don't add git aliases — the owner uses plain git commands directly.
