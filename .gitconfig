@@ -1,0 +1,11 @@
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[user]
+	name = Avelino Sanchez
+	email = avelino.schz@gmail.com
+	signingkey = 832F408EC659C560
+[commit]
+	gpgsign = true

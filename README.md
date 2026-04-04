@@ -32,6 +32,7 @@ git config commit.template .gitmessage
 
 | File/Directory | Description |
 | -------------- | ----------- |
+| `.gitconfig` | Git user config, signing key, LFS filters |
 | `.zshrc` | Zsh configuration with Oh-My-Zsh, git prompt styling |
 | `.zprofile` | Login shell config: Homebrew PATH setup |
 | `.vimrc` | Vim settings (syntax, line numbers, dark theme) |

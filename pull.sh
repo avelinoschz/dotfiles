@@ -23,8 +23,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Add or remove entries here to track more or fewer files.
 # Parentheses define a bash array; each space-separated string is one element.
 FILES=(
+    ".gitconfig"
     ".zprofile"
-    ".tool-versions"
     ".claude/settings.json"
     ".claude/statusline-command.sh"
 )
