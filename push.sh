@@ -32,7 +32,6 @@ FILES=(
     ".tool-versions"
     ".config/ghostty/config"
     ".config/fastfetch/config.jsonc"
-    "vscode-extensions.txt"
 )
 
 # ─── usage ───────────────────────────────────────────────────────────────────

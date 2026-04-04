@@ -63,9 +63,11 @@ When adding anything to `.zshrc`, place it in the optimal position prioritizing 
 
 - Extensions are tracked in `vscode-extensions.txt` (one extension ID per line).
 - To update it after installing or removing extensions in VS Code, run:
+
   ```bash
   code --list-extensions > vscode-extensions.txt
   ```
+  
 - `setup.sh` reads this file and installs all extensions on a fresh machine.
 - Blank lines and `#` comments in the file are ignored by the install loop.
 
