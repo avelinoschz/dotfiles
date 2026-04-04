@@ -46,18 +46,18 @@ git config commit.template .gitmessage
 - All `ZSH_THEME_GIT_PROMPT_*` variables are defined in `.zshrc` directly — no theme file.
 - `ZSH_THEME_GIT_PROMPT_ADDED` (`+`) only fires for staged *new* files (`git add` on a new file). Staged modifications to existing files share `MODIFIED` (`!`) with unstaged mods — this is a limitation of oh-my-zsh's `git_prompt_status`. A custom function would be needed to distinguish them.
 
-### `sync.sh` — repo → `$HOME`
+### `push.sh` — repo → `$HOME`
 
 - One-way sync: dotfiles repo → `$HOME`.
-- Creates a timestamped backup (`~/.zshrc.bak.YYYYMMDD_HHMMSS`) before every apply.
+- Creates a timestamped backup (`~/<file>.bak.YYYYMMDD_HHMMSS`) before every apply.
 - Flags: `--restore` (apply most recent backup), `--clean` (list and delete all backups).
-- If new dotfiles are added to the repo and need syncing, extend `sync.sh` to handle them.
+- If new dotfiles are added to the repo and need syncing, extend the `FILES=()` array in `push.sh`.
 
 ### `pull.sh` — `$HOME` → repo
 
 - Reverse direction: captures current state from `$HOME` into the dotfiles repo.
 - Operates on a list defined in `FILES=()` — add entries there to pull more files.
-- Currently pulls: `.tool-versions`.
+- Currently pulls: `.gitconfig`, `.zprofile`, `.claude/settings.json`, `.claude/statusline-command.sh`.
 - No backup needed on the repo side — git history is the safety net.
 
 ### Machine-specific config
@@ -69,5 +69,5 @@ git config commit.template .gitmessage
 
 - Don't add a Makefile as the primary interface for scripts.
 - Don't add dependencies that require installation before `setup.sh` runs.
-- Don't make `sync.sh` or any script apply changes silently without user confirmation.
+- Don't make `push.sh` or any script apply changes silently without user confirmation.
 - Don't add oh-my-zsh themes that require external font packages.
