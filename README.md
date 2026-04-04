@@ -73,12 +73,9 @@ The zsh prompt displays git status indicators using oh-my-zsh's built-in functio
 
 Example: `dotfiles (main)⬆!? %`
 
-## Setup
+## Usage
 
 ```bash
-# Fresh machine setup
-./setup.sh
-
 # Apply dotfiles to $HOME (shows diff and asks for confirmation)
 ./push.sh --all
 
