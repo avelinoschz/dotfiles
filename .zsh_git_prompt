@@ -101,9 +101,9 @@ _git_prompt_status() {
   (( modified  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_MODIFIED}"
   (( added     > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_ADDED}"
   (( untracked > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_UNTRACKED}"
-  (( behind > 0 && ahead  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_DIVERGED}${ahead}%F{red}⇣%f${behind}"
-  (( ahead  > 0 && behind == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_AHEAD}${ahead}"
-  (( behind > 0 && ahead  == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_BEHIND}${behind}"
+  (( behind > 0 && ahead  > 0 )) && result+="${ZSH_THEME_GIT_PROMPT_DIVERGED}${ahead}%f${ZSH_THEME_GIT_PROMPT_BEHIND}${behind}%f"
+  (( ahead  > 0 && behind == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_AHEAD}${ahead}%f"
+  (( behind > 0 && ahead  == 0 )) && result+="${ZSH_THEME_GIT_PROMPT_BEHIND}${behind}%f"
 
   echo "$result"
 }

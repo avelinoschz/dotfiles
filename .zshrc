@@ -41,9 +41,9 @@ ZSH_THEME_GIT_PROMPT_ADDED="%F{green}+%f"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%F{yellow}?%f"
 
 # Remote tracking status
-ZSH_THEME_GIT_PROMPT_AHEAD="%F{cyan}⇡%f"
-ZSH_THEME_GIT_PROMPT_BEHIND="%F{red}⇣%f"
-ZSH_THEME_GIT_PROMPT_DIVERGED="%F{red}⇡%f"
+ZSH_THEME_GIT_PROMPT_AHEAD="%F{cyan}⇡"
+ZSH_THEME_GIT_PROMPT_BEHIND="%F{red}⇣"
+ZSH_THEME_GIT_PROMPT_DIVERGED="%F{red}⇡"
 
 # Git prompt
 setopt prompt_subst
