@@ -61,19 +61,19 @@ The zsh prompt displays git status indicators using oh-my-zsh's built-in functio
 
 | Symbol | Color | Meaning |
 | ------ | ----- | ------- |
-| `(main)` | green | Current branch |
-| `⬆` | cyan | Unpushed commits (ahead of remote) |
-| `⬇` | magenta | Behind remote (need to pull) |
-| `⬆⬇` | red | Diverged from remote |
-| `?` | red | Untracked files |
+| `(main)` | cyan | Current branch |
+| `⇡` | cyan | Unpushed commits (ahead of remote) |
+| `⇣` | red | Behind remote (need to pull) |
+| `⇡⇣` | red | Diverged from remote |
+| `?` | yellow | Untracked files |
 | `+` | green | Staged new files |
 | `!` | yellow | Modified files (staged or unstaged) |
 | `»` | yellow | Renamed files |
-| `✗` | red | Deleted files |
+| `✘` | red | Deleted files |
 | `=` | red | Unmerged conflicts |
 | `$` | blue | Stash exists |
 
-Example: `dotfiles (main)⬆!? %`
+Example: `dotfiles(main)!?⇡ %`
 
 ## Usage
 
