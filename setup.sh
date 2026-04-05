@@ -137,14 +137,20 @@ fi
 # asdf language runtimes: skip if the pinned version is already installed.
 # 'asdf list <lang>' prints installed versions for that language.
 # In dry-run mode the guards are skipped — same rationale as above.
-if [ "$DRY_RUN" -eq 1 ] || ! asdf list python 2>/dev/null | grep -q "3.14.2"; then
-    run_cmd asdf install python 3.14.2
+# Versions are read from .tool-versions — that file is the single source of truth.
+# Update versions there and setup.sh picks them up automatically.
+PYTHON_VERSION=$(grep "^python"  "$SCRIPT_DIR/.tool-versions" | awk '{print $2}')
+NODEJS_VERSION=$(grep "^nodejs"  "$SCRIPT_DIR/.tool-versions" | awk '{print $2}')
+GOLANG_VERSION=$(grep "^golang"  "$SCRIPT_DIR/.tool-versions" | awk '{print $2}')
+
+if [ "$DRY_RUN" -eq 1 ] || ! asdf list python 2>/dev/null | grep -q "$PYTHON_VERSION"; then
+    run_cmd asdf install python "$PYTHON_VERSION"
 fi
-if [ "$DRY_RUN" -eq 1 ] || ! asdf list nodejs 2>/dev/null | grep -q "24.13.0"; then
-    run_cmd asdf install nodejs 24.13.0
+if [ "$DRY_RUN" -eq 1 ] || ! asdf list nodejs 2>/dev/null | grep -q "$NODEJS_VERSION"; then
+    run_cmd asdf install nodejs "$NODEJS_VERSION"
 fi
-if [ "$DRY_RUN" -eq 1 ] || ! asdf list golang 2>/dev/null | grep -q "1.25.5"; then
-    run_cmd asdf install go 1.25.5
+if [ "$DRY_RUN" -eq 1 ] || ! asdf list golang 2>/dev/null | grep -q "$GOLANG_VERSION"; then
+    run_cmd asdf install golang "$GOLANG_VERSION"
 fi
 
 # ─── claude code ─────────────────────────────────────────────────────────────
