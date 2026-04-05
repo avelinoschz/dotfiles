@@ -10,6 +10,13 @@
 #   ./push.sh --restore .zprofile
 #   ./push.sh --clean --all
 #   ./push.sh --clean .zprofile
+#   ./push.sh --dry-run --all
+#   ./push.sh --dry-run .zshrc
+#
+# Flag compatibility:
+#   --dry-run is only valid with the default push mode. It cannot be combined
+#   with --restore or --clean because those modes do not apply file changes —
+#   there is nothing destructive for dry-run to preview.
 
 # ─── tracked files ───────────────────────────────────────────────────────────
 
@@ -40,12 +47,16 @@ FILES=(
 # This one prints instructions and exits with code 1 (meaning "error").
 # 'exit 1' signals to the caller (e.g. a CI system) that something went wrong.
 usage() {
-    echo "Usage: push.sh [--restore | --clean] (--all | <file> [<file>...])"
+    echo "Usage: push.sh [--dry-run] [--restore | --clean] (--all | <file> [<file>...])"
     echo ""
     echo "  --all              Target all tracked files: ${FILES[*]}"
     echo "  <file> [<file>...] Target specific file(s) by name"
     echo "  --restore          Restore most recent backup for the given scope"
     echo "  --clean            List and delete all backups for the given scope"
+    echo "  --dry-run          Show diffs for pending files without applying any changes."
+    echo "                     Only valid in push mode — incompatible with --restore and"
+    echo "                     --clean, which do not apply file changes and have nothing"
+    echo "                     for dry-run to preview."
     exit 1
 }
 
@@ -53,6 +64,9 @@ usage() {
 
 # MODE controls which action to run. Default is "push" (apply files to $HOME).
 MODE="push"
+
+# DRY_RUN controls whether changes are applied or only previewed.
+DRY_RUN=0
 
 # SCOPE is the list of files this invocation will act on.
 # It starts empty and gets filled based on the arguments passed.
@@ -64,21 +78,32 @@ for arg in "$@"; do
     # 'case' is like a switch statement. It matches $arg against patterns.
     # Each pattern ends with ). Double semicolons ;; end each branch.
     case "$arg" in
-        --restore) MODE="restore" ;;
-        --clean)   MODE="clean" ;;
+        --restore)  MODE="restore" ;;
+        --clean)    MODE="clean" ;;
+        --dry-run)  DRY_RUN=1 ;;
         # --all fills SCOPE with every entry in FILES.
         # "${FILES[@]}" expands the array to all its elements as separate words.
-        --all)     SCOPE=("${FILES[@]}") ;;
-        --*)       echo "Unknown flag: $arg"; usage ;;
+        --all)      SCOPE=("${FILES[@]}") ;;
+        --*)        echo "Unknown flag: $arg"; usage ;;
         # Any non-flag argument is treated as a filename and appended to SCOPE.
         # += on an array appends elements to it.
-        *)         SCOPE+=("$arg") ;;
+        *)          SCOPE+=("$arg") ;;
     esac
 done
 
 # ${#SCOPE[@]} is the number of elements in the SCOPE array.
 # If it's 0, no scope was given — print usage and exit.
 if [ ${#SCOPE[@]} -eq 0 ]; then
+    usage
+fi
+
+# --dry-run is incompatible with --restore and --clean.
+# Those modes manage backups, not file changes — dry-run has nothing to preview.
+if [ "$DRY_RUN" -eq 1 ] && [ "$MODE" != "push" ]; then
+    echo "Error: --dry-run can only be used in push mode."
+    echo "       --restore and --clean manage backups, not file changes."
+    echo "       There is nothing for dry-run to preview in those modes."
+    echo ""
     usage
 fi
 
@@ -110,7 +135,11 @@ if [ "$MODE" = "push" ]; then
 
     # If nothing differs, there is nothing to do.
     if [ ${#PENDING[@]} -eq 0 ]; then
-        echo "All files are up to date."
+        if [ "$DRY_RUN" -eq 1 ]; then
+            echo "Nothing to push. All files are up to date."
+        else
+            echo "All files are up to date."
+        fi
         exit 0
     fi
 
@@ -120,6 +149,30 @@ if [ "$MODE" = "push" ]; then
         echo "  ~ $file"
     done
     echo ""
+
+    # ── dry-run path ─────────────────────────────────────────────────────────
+    # Show diffs for all pending files without prompting or applying anything.
+
+    if [ "$DRY_RUN" -eq 1 ]; then
+        for file in "${PENDING[@]}"; do
+            SOURCE="$SCRIPT_DIR/$file"
+            DEST="$HOME/$file"
+
+            if [ -f "$DEST" ]; then
+                diff_left="$DEST"
+            else
+                diff_left="/dev/null"
+            fi
+            echo "--- $DEST"
+            echo "+++ $SOURCE"
+            diff --color=always "$diff_left" "$SOURCE" || true
+            echo ""
+        done
+        echo "Dry run complete — no files were modified."
+        exit 0
+    fi
+
+    # ── normal push path ─────────────────────────────────────────────────────
 
     # Global confirmation — lets the user abort before seeing any diffs.
     read -rp "Proceed? [y/N] " answer
@@ -148,7 +201,7 @@ if [ "$MODE" = "push" ]; then
         fi
         echo "--- $DEST"
         echo "+++ $SOURCE"
-        diff --color=always "$diff_left" "$SOURCE"
+        diff --color=always "$diff_left" "$SOURCE" || true
         echo ""
 
         read -rp "Apply ~/$file? [y/N] " answer

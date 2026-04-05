@@ -7,6 +7,8 @@
 #   ./pull.sh --all
 #   ./pull.sh .zprofile
 #   ./pull.sh .zprofile .tool-versions
+#   ./pull.sh --dry-run --all
+#   ./pull.sh --dry-run .zprofile
 
 # ─── tracked files ───────────────────────────────────────────────────────────
 
@@ -34,14 +36,18 @@ FILES=(
 # usage() is a function. In bash, functions are defined as: name() { ... }
 # This one prints instructions and exits with code 1 (meaning "error").
 usage() {
-    echo "Usage: pull.sh (--all | <file> [<file>...])"
+    echo "Usage: pull.sh [--dry-run] (--all | <file> [<file>...])"
     echo ""
     echo "  --all              Target all tracked files: ${FILES[*]}"
     echo "  <file> [<file>...] Target specific file(s) by name"
+    echo "  --dry-run          Show diffs for pending files without pulling any changes."
     exit 1
 }
 
 # ─── argument parsing ────────────────────────────────────────────────────────
+
+# DRY_RUN controls whether changes are applied or only previewed.
+DRY_RUN=0
 
 # SCOPE is the list of files this invocation will act on.
 # It starts empty and gets filled based on the arguments passed.
@@ -53,13 +59,14 @@ for arg in "$@"; do
     # 'case' is like a switch statement. It matches $arg against patterns.
     # Each pattern ends with ). Double semicolons ;; end each branch.
     case "$arg" in
+        --dry-run) DRY_RUN=1 ;;
         # --all fills SCOPE with every entry in FILES.
         # "${FILES[@]}" expands the array to all its elements as separate words.
-        --all) SCOPE=("${FILES[@]}") ;;
-        --*)   echo "Unknown flag: $arg"; usage ;;
+        --all)     SCOPE=("${FILES[@]}") ;;
+        --*)       echo "Unknown flag: $arg"; usage ;;
         # Any non-flag argument is treated as a filename and appended to SCOPE.
         # += on an array appends elements to it.
-        *)     SCOPE+=("$arg") ;;
+        *)         SCOPE+=("$arg") ;;
     esac
 done
 
@@ -75,7 +82,7 @@ fi
 # We only show/ask about files that have real changes.
 PENDING=()
 for file in "${SCOPE[@]}"; do
-    src="$HOME/$file"       # source: the live file in $HOME
+    src="$HOME/$file"        # source: the live file in $HOME
     dest="$SCRIPT_DIR/$file" # destination: the copy tracked in this repo
 
     # -f checks if a path exists and is a regular file.
@@ -97,11 +104,15 @@ done
 
 # If nothing differs, there is nothing to do.
 if [ ${#PENDING[@]} -eq 0 ]; then
-    echo "All files are up to date."
+    if [ "$DRY_RUN" -eq 1 ]; then
+        echo "Nothing to pull. All files are up to date."
+    else
+        echo "All files are up to date."
+    fi
     exit 0
 fi
 
-# ─── summary + global confirmation ───────────────────────────────────────────
+# ─── summary ─────────────────────────────────────────────────────────────────
 
 # Show a summary of what will change before asking anything.
 echo ""
@@ -110,6 +121,30 @@ for file in "${PENDING[@]}"; do
     echo "  ~ $file"
 done
 echo ""
+
+# ─── dry-run path ────────────────────────────────────────────────────────────
+
+# Show diffs for all pending files without prompting or applying anything.
+if [ "$DRY_RUN" -eq 1 ]; then
+    for file in "${PENDING[@]}"; do
+        src="$HOME/$file"
+        dest="$SCRIPT_DIR/$file"
+
+        if [ -f "$dest" ]; then
+            diff_left="$dest"
+        else
+            diff_left="/dev/null"
+        fi
+        echo "--- $dest"
+        echo "+++ $src"
+        diff --color=always "$diff_left" "$src" || true
+        echo ""
+    done
+    echo "Dry run complete — no files were modified."
+    exit 0
+fi
+
+# ─── global confirmation ─────────────────────────────────────────────────────
 
 # Global confirmation — lets the user abort before seeing any diffs.
 read -rp "Proceed? [y/N] " answer
@@ -139,7 +174,7 @@ for file in "${PENDING[@]}"; do
     fi
     echo "--- $dest"
     echo "+++ $src"
-    diff --color=always "$diff_left" "$src"
+    diff --color=always "$diff_left" "$src" || true
     echo ""
 
     read -rp "Pull $file into repo? [y/N] " answer
