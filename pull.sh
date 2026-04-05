@@ -159,6 +159,7 @@ echo ""
 # ─── apply per file ──────────────────────────────────────────────────────────
 
 any_updated=0
+UPDATED_FILES=()
 
 for file in "${PENDING[@]}"; do
     src="$HOME/$file"
@@ -187,6 +188,7 @@ for file in "${PENDING[@]}"; do
             cp "$src" "$dest"
             echo "$file updated in repo."
             any_updated=1
+            UPDATED_FILES+=("$file")
             ;;
         *)
             echo "Skipped $file."
@@ -196,5 +198,9 @@ for file in "${PENDING[@]}"; do
 done
 
 if [ $any_updated -eq 1 ]; then
-    echo "Done. Review changes with: git diff"
+    echo "Done. Files pulled into repo:"
+    for f in "${UPDATED_FILES[@]}"; do
+        echo "  ✓ $f"
+    done
+    echo "Review changes with: git diff"
 fi

@@ -186,6 +186,7 @@ if [ "$MODE" = "push" ]; then
 
     # Second pass: show diff and apply each pending file individually.
     any_updated=0
+    UPDATED_FILES=()
     for file in "${PENDING[@]}"; do
         SOURCE="$SCRIPT_DIR/$file"
         DEST="$HOME/$file"
@@ -219,6 +220,7 @@ if [ "$MODE" = "push" ]; then
                 cp "$SOURCE" "$DEST"
                 echo "~/$file updated."
                 any_updated=1
+                UPDATED_FILES+=("$file")
                 ;;
             *)
                 echo "Skipped $file."
@@ -228,7 +230,11 @@ if [ "$MODE" = "push" ]; then
     done
 
     if [ $any_updated -eq 1 ]; then
-        echo "Done. Reload shell: source ~/.zshrc"
+        echo "Done. Files deployed:"
+        for f in "${UPDATED_FILES[@]}"; do
+            echo "  ✓ ~/$f"
+        done
+        echo "Reload shell: source ~/.zshrc"
     fi
 fi
 

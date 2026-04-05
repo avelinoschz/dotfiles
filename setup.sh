@@ -39,6 +39,26 @@ trap 'echo "Error: setup.sh failed at line $LINENO. See output above." >&2' ERR
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+SUMMARY=()
+SUMMARY_DETAILS=()  # parallel array: one detail string per SUMMARY entry (empty = no sub-bullets)
+
+# ─── xcode cli tools ─────────────────────────────────────────────────────────
+
+echo ""
+echo "==> Xcode CLI tools"
+
+# Homebrew and git require Xcode Command Line Tools on a fresh macOS install.
+# 'xcode-select -p' prints the active developer directory and exits 0 if
+# already installed, non-zero otherwise.
+# Note: xcode-select --install opens a UI popup — it is not a silent install.
+if ! xcode-select -p &>/dev/null; then
+    run_cmd xcode-select --install
+    SUMMARY+=("Xcode CLI tools installed")
+    SUMMARY_DETAILS+=("")
+else
+    echo "Xcode CLI tools already installed."
+fi
+
 # ─── homebrew ────────────────────────────────────────────────────────────────
 
 echo ""
@@ -60,6 +80,12 @@ fi
 if [ -f "/opt/homebrew/bin/brew" ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
+
+# Sync the formula database before installing to avoid stale cached versions.
+run_cmd brew update
+
+SUMMARY+=("Homebrew configured")
+SUMMARY_DETAILS+=("")
 
 # ─── brew formulae ───────────────────────────────────────────────────────────
 
@@ -86,6 +112,9 @@ run_cmd brew install asdf
 run_cmd brew install gh
 run_cmd brew install gemini-cli
 run_cmd brew install opencode
+
+SUMMARY+=("Brew formulae installed")
+SUMMARY_DETAILS+=("bat, fastfetch, git, gnupg, mole, neovim, pinentry-mac, tmux, tree, zsh-autosuggestions, zsh-syntax-highlighting, asdf, gh, gemini-cli, opencode")
 
 # ─── brew casks ──────────────────────────────────────────────────────────────
 
@@ -114,6 +143,9 @@ run_cmd brew install --cask claude
 run_cmd brew install --cask chatgpt
 run_cmd brew install --cask codex
 run_cmd brew install --cask copilot-cli
+
+SUMMARY+=("Brew casks installed")
+SUMMARY_DETAILS+=("ghostty, visual-studio-code, sublime-text, cursor, goland, pycharm, clion, tableplus, bruno, docker-desktop, github, claude, chatgpt, codex, copilot-cli")
 
 # ─── asdf ────────────────────────────────────────────────────────────────────
 
@@ -153,6 +185,9 @@ if [ "$DRY_RUN" -eq 1 ] || ! asdf list golang 2>/dev/null | grep -q "$GOLANG_VER
     run_cmd asdf install golang "$GOLANG_VERSION"
 fi
 
+SUMMARY+=("asdf configured")
+SUMMARY_DETAILS+=("python ${PYTHON_VERSION}, nodejs ${NODEJS_VERSION}, golang ${GOLANG_VERSION}")
+
 # ─── claude code ─────────────────────────────────────────────────────────────
 
 echo ""
@@ -173,8 +208,12 @@ echo "==> Claude Code"
 # Instead, dry-run prints a descriptive placeholder and skips the download.
 if [ "$DRY_RUN" -eq 1 ]; then
     echo "[dry-run] curl -fsSL https://claude.ai/install.sh | bash"
+    SUMMARY+=("Claude Code installed")
+    SUMMARY_DETAILS+=("")
 elif ! command -v claude &>/dev/null; then
     curl -fsSL https://claude.ai/install.sh | bash
+    SUMMARY+=("Claude Code installed")
+    SUMMARY_DETAILS+=("")
 fi
 
 # ─── vscode extensions ───────────────────────────────────────────────────────
@@ -186,9 +225,55 @@ echo "==> VS Code extensions"
 # Each line in vscode-extensions.txt is one extension ID (e.g. golang.go).
 # --force ensures the latest version is installed even if already present.
 if command -v code &>/dev/null && [ -f "$SCRIPT_DIR/vscode-extensions.txt" ]; then
+    ext_names=()
     while IFS= read -r ext; do
         # Skip blank lines and comments (lines starting with #)
         [[ -z "$ext" || "$ext" == \#* ]] && continue
         run_cmd code --install-extension "$ext" --force
+        ext_names+=("$ext")
     done < "$SCRIPT_DIR/vscode-extensions.txt"
+    SUMMARY+=("VS Code extensions installed: ${#ext_names[@]}")
+    SUMMARY_DETAILS+=("$(IFS=', '; echo "${ext_names[*]}")")
 fi
+
+# ─── cleanup ─────────────────────────────────────────────────────────────────
+
+echo ""
+echo "==> Cleanup"
+
+run_cmd brew cleanup
+
+# ─── ssh and gpg keys ────────────────────────────────────────────────────────
+
+if [ "$DRY_RUN" -eq 1 ]; then
+    "$SCRIPT_DIR/setup-keys.sh" --dry-run
+else
+    "$SCRIPT_DIR/setup-keys.sh"
+fi
+SUMMARY+=("SSH and GPG keys configured")
+SUMMARY_DETAILS+=("")
+
+# ─── dotfiles ────────────────────────────────────────────────────────────────
+
+echo ""
+echo "==> Dotfiles"
+
+if [ "$DRY_RUN" -eq 1 ]; then
+    "$SCRIPT_DIR/push.sh" --dry-run --all
+else
+    "$SCRIPT_DIR/push.sh" --all
+fi
+SUMMARY+=("Dotfiles deployed to \$HOME")
+SUMMARY_DETAILS+=("")
+
+# ─── setup complete ──────────────────────────────────────────────────────────
+
+echo ""
+echo "==> Setup complete"
+for i in "${!SUMMARY[@]}"; do
+    echo "  ✓ ${SUMMARY[$i]}"
+    if [ -n "${SUMMARY_DETAILS[$i]:-}" ]; then
+        echo "      ${SUMMARY_DETAILS[$i]}"
+    fi
+done
+echo ""
