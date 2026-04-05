@@ -5,6 +5,8 @@
 
 Opinionated macOS developer environment managed via Homebrew and asdf — shell, editors, terminal, and tooling configs for a consistent setup across machines.
 
+![Terminal preview](assets/terminal-preview.png)
+
 ## Prerequisites
 
 ```bash
