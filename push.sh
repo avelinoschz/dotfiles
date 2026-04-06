@@ -250,7 +250,8 @@ if [ "$MODE" = "restore" ]; then
         # 'ls -t' lists files sorted by modification time (newest first).
         # 'head -1' takes only the first line (the most recent backup).
         # '2>/dev/null' discards error output if no backup files exist.
-        # shellcheck disable=SC2012 -- backup filenames are script-controlled; ls -t needed for mtime sort
+        # backup filenames are script-controlled; ls -t needed for mtime sort
+        # shellcheck disable=SC2012
         LATEST=$(ls -t "${DEST}.bak."* 2>/dev/null | head -1)
         if [ -n "$LATEST" ]; then
             # -n checks that the string is non-empty.
