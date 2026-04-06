@@ -5,6 +5,7 @@ MODEL=$(echo "$input" | jq -r '.model.display_name // .model.id // "claude"')
 PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
 DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
 FIVE_H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+FIVE_H_RESETS_AT=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 SEVEN_D=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 WORKTREE=$(echo "$input" | jq -r '.worktree.name // empty')
 
@@ -41,7 +42,21 @@ RATE=""
 if [ -n "$FIVE_H" ] && [ -n "$SEVEN_D" ]; then
   FIVE_H_INT=$(printf '%.0f' "$FIVE_H")
   SEVEN_D_INT=$(printf '%.0f' "$SEVEN_D")
-  RATE=" | 5h:${FIVE_H_INT}% 7d:${SEVEN_D_INT}%"
+  RESET_STR=""
+  if [ -n "$FIVE_H_RESETS_AT" ]; then
+    NOW=$(date +%s)
+    DIFF=$((FIVE_H_RESETS_AT - NOW))
+    if [ $DIFF -gt 0 ]; then
+      DIFF_H=$((DIFF / 3600))
+      DIFF_M=$(((DIFF % 3600) / 60))
+      if [ $DIFF_H -gt 0 ]; then
+        RESET_STR=" (reset ${DIFF_H}h ${DIFF_M}m)"
+      else
+        RESET_STR=" (reset ${DIFF_M}m)"
+      fi
+    fi
+  fi
+  RATE=" | 5h:${FIVE_H_INT}%${RESET_STR} 7d:${SEVEN_D_INT}%"
 fi
 
 # Worktree
