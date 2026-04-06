@@ -6,12 +6,13 @@ on:
   pull_request:
     branches: ["**"]
 
+
 jobs:
   shell-syntax:
     name: Shell syntax (bash -n)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Check syntax of all shell scripts
         run: |
           find . -name "*.sh" -not -path "./.git/*" | sort | while read -r f; do
@@ -23,7 +24,7 @@ jobs:
     name: ShellCheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Install ShellCheck
         run: sudo apt-get install -y shellcheck
       - name: Run ShellCheck on all scripts
@@ -33,7 +34,7 @@ jobs:
     name: Tracked files exist in repo
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Verify push.sh FILES array entries exist
         run: |
           missing=0
@@ -51,6 +52,6 @@ jobs:
     name: Makefile
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Validate Makefile (help target)
         run: make help
