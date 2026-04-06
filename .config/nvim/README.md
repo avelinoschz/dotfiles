@@ -16,9 +16,11 @@ downloads it automatically via git before loading any plugins.
 
 ## Plugins
 
+### Kickstart defaults
+
 | Plugin | Purpose |
 | ------ | ------- |
-| `folke/tokyonight.nvim` | Color scheme (tokyonight-night) |
+| `folke/tokyonight.nvim` | Available but not active — see [Colorschemes](#colorschemes) |
 | `folke/which-key.nvim` | Shows available keymaps as you type the leader |
 | `folke/todo-comments.nvim` | Highlights `TODO`, `NOTE`, `FIXME` in comments |
 | `nvim-telescope/telescope.nvim` | Fuzzy finder for files, text, help, and more |
@@ -29,6 +31,31 @@ downloads it automatically via git before loading any plugins.
 | `stevearc/conform.nvim` | Auto-format on save |
 | `lewis6991/gitsigns.nvim` | Git change indicators in the gutter |
 | `NMAC427/guess-indent.nvim` | Auto-detect indentation style per file |
+
+### Colorschemes
+
+Managed in `lua/custom/plugins/colorschemes.lua`. All listed themes are installed
+and available via `:Telescope colorscheme`.
+
+The active theme is the one with `lazy = false` and a `vim.cmd.colorscheme` call
+in its `config`. To switch, set `lazy = true` on the current active theme and
+`lazy = false` + `vim.cmd.colorscheme` on the desired one.
+
+| Plugin | Flavour | Status |
+| ------ | ------- | ------ |
+| `folke/tokyonight.nvim` | — | installed by kickstart, available |
+| `catppuccin/nvim` | mocha | **active** |
+| `rose-pine/neovim` | — | installed, available |
+| `rebelot/kanagawa.nvim` | — | installed, available |
+
+#### Kickstart changes
+
+Two minimal changes were made to `init.lua` to hand off colorscheme control to
+the custom plugins, marked with `-- [custom]` comments for traceability:
+
+- `lazy = true` on tokyonight — prevents it from loading at startup
+- `vim.cmd.colorscheme 'tokyonight-night'` commented out — prevents it from
+  overriding the active theme set in `active-theme.lua`
 
 ## First launch
 

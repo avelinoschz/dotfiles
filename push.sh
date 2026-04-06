@@ -39,6 +39,7 @@ FILES=(
     ".config/ghostty/config"
     ".config/fastfetch/config.jsonc"
     ".config/nvim/init.lua"
+    ".config/nvim/lua/custom/plugins/colorschemes.lua"
 )
 
 # ─── usage ───────────────────────────────────────────────────────────────────
