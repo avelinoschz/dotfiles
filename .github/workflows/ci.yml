@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  shell-syntax:
+    name: Shell syntax (bash -n)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check syntax of all shell scripts
+        run: |
+          find . -name "*.sh" -not -path "./.git/*" | sort | while read -r f; do
+            echo "Checking: $f"
+            bash -n "$f"
+          done
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+      - name: Run ShellCheck on all scripts
+        run: find . -name "*.sh" -not -path "./.git/*" | sort | xargs shellcheck
+
+  tracked-files:
+    name: Tracked files exist in repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify push.sh FILES array entries exist
+        run: |
+          missing=0
+          while IFS= read -r file; do
+            if [ ! -f "$file" ]; then
+              echo "MISSING: $file (listed in push.sh FILES but not found in repo)"
+              missing=1
+            else
+              echo "OK: $file"
+            fi
+          done < <(awk '/^FILES=\(/,/^\)/' push.sh | grep '"' | tr -d '"' | tr -d ' ')
+          exit "$missing"
+
+  makefile:
+    name: Makefile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Makefile (help target)
+        run: make help
