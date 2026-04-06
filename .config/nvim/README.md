@@ -44,7 +44,8 @@ in its `config`. To switch, set `lazy = true` on the current active theme and
 | Plugin | Flavour | Status |
 | ------ | ------- | ------ |
 | `folke/tokyonight.nvim` | — | installed by kickstart, available |
-| `catppuccin/nvim` | mocha | **active** |
+| `catppuccin/nvim` | mocha | installed, available |
+| `olimorris/onedarkpro.nvim` | onedark | **active** |
 | `rose-pine/neovim` | — | installed, available |
 | `rebelot/kanagawa.nvim` | — | installed, available |
 

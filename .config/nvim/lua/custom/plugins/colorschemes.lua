@@ -6,12 +6,23 @@
 return {
   { 'catppuccin/nvim',
     name = 'catppuccin',
-    lazy = false,
-    priority = 1000,
+    lazy = true,
     opts = { flavour = 'mocha' },
     config = function(_, opts)
       require('catppuccin').setup(opts)
-      vim.cmd.colorscheme 'catppuccin'
+    end,
+  },
+  { 'olimorris/onedarkpro.nvim',
+    lazy = false,
+    priority = 1000,
+    opts = {
+      options = {
+        cursorline = true,
+      },
+    },
+    config = function(_, opts)
+      require('onedarkpro').setup(opts)
+      vim.cmd.colorscheme 'onedark'
     end,
   },
   { 'rose-pine/neovim',      name = 'rose-pine',  lazy = true },
