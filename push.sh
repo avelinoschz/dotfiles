@@ -38,6 +38,7 @@ FILES=(
     ".zprofile"
     ".config/ghostty/config"
     ".config/fastfetch/config.jsonc"
+    ".config/nvim/init.lua"
 )
 
 # ─── usage ───────────────────────────────────────────────────────────────────

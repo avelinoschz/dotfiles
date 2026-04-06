@@ -100,6 +100,11 @@ When adding anything to `.zshrc`, place it in the optimal position prioritizing 
 - Comments must be in English (consistent with the existing convention in scripts and tracked config files).
 - A comment should answer: *what does this do?* and, if not obvious, *why is it here?*
 
+### Neovim config (`nvim/init.lua` and future modules)
+
+- Follow Neovim community conventions: use `vim.opt` for options, `vim.keymap.set` for keymaps, and set `vim.g.mapleader` before any keymap definitions.
+- Keep config minimal and incremental — only add what is actively needed.
+
 ## What to Avoid
 
 - Don't add a Makefile as the primary interface for scripts.
