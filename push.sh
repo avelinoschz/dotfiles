@@ -217,7 +217,7 @@ if [ "$MODE" = "push" ]; then
                 # part of a path, e.g. dirname ~/.claude/settings.json → ~/.claude
                 mkdir -p "$(dirname "$DEST")"
                 cp "$SOURCE" "$DEST"
-                echo "~/$file updated."
+                echo "$HOME/$file updated."
                 any_updated=1
                 UPDATED_FILES+=("$file")
                 ;;
@@ -250,6 +250,7 @@ if [ "$MODE" = "restore" ]; then
         # 'ls -t' lists files sorted by modification time (newest first).
         # 'head -1' takes only the first line (the most recent backup).
         # '2>/dev/null' discards error output if no backup files exist.
+        # shellcheck disable=SC2012 -- backup filenames are script-controlled; ls -t needed for mtime sort
         LATEST=$(ls -t "${DEST}.bak."* 2>/dev/null | head -1)
         if [ -n "$LATEST" ]; then
             # -n checks that the string is non-empty.

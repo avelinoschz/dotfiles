@@ -73,6 +73,7 @@ fi
 # The grep -qF guard makes this idempotent: the line is only written once even
 # if setup.sh is run multiple times.
 if ! grep -qF 'brew shellenv' ~/.zprofile 2>/dev/null; then
+    # shellcheck disable=SC2016 -- single quotes are intentional: writing a literal string to .zprofile
     run_cmd bash -c 'echo '\''eval "$(/opt/homebrew/bin/brew shellenv)"'\'' >> ~/.zprofile'
 fi
 
