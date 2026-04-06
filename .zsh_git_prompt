@@ -3,6 +3,10 @@
 # Sourced from .zshrc. The visual output is controlled by the
 # ZSH_THEME_GIT_PROMPT_* variables defined in .zshrc.
 #
+# Naming convention: no leading underscore. In zsh, the underscore namespace
+# (_git, _git_branch, _git_status, …) is reserved for completion functions.
+# Using it for prompt helpers causes name collisions that break tab completion.
+#
 # Performance note: these functions call 'git' on every prompt render.
 # On normal repos this is fast (~10-30ms). On very large monorepos,
 # 'git status --porcelain' can be slow and cause noticeable lag after
@@ -10,34 +14,34 @@
 # a precmd hook so they run once per prompt instead of being evaluated
 # inline, or to add result caching keyed on the git index mtime.
 
-# _git_branch: resolves the name of the current branch.
+# git_prompt_branch: resolves the name of the current branch.
 # - 'git symbolic-ref --short HEAD' returns the branch name (e.g. "main").
 #   It fails (non-zero exit) in detached HEAD state (e.g. after git checkout <sha>).
 # - The || chain falls back to 'git rev-parse --short HEAD', which returns
 #   a short commit SHA (e.g. "a1b2c3d") — useful to know where you are.
 # - If both fail (not a git repo), the function returns 1 and prints nothing.
 # - '2>/dev/null' silences error messages from git.
-_git_branch() {
+git_prompt_branch() {
   local branch
   branch=$(git symbolic-ref --short HEAD 2>/dev/null) ||
   branch=$(git rev-parse --short HEAD 2>/dev/null) || return 1
   echo "$branch"
 }
 
-# _git_prompt_info: wraps the branch name with the prefix/suffix colors.
+# git_prompt_info: wraps the branch name with the prefix/suffix colors.
 # Reads ZSH_THEME_GIT_PROMPT_PREFIX and ZSH_THEME_GIT_PROMPT_SUFFIX from .zshrc.
 # Outputs nothing if not in a git repo (|| return 0 exits cleanly).
-_git_prompt_info() {
+git_prompt_info() {
   local branch
-  branch=$(_git_branch) || return 0
+  branch=$(git_prompt_branch) || return 0
   echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${branch}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
-# _git_prompt_status: shows indicators for remote drift and local file states.
+# git_prompt_status: shows indicators for remote drift and local file states.
 # Each indicator is a colored symbol defined as a ZSH_THEME_GIT_PROMPT_* variable.
 # Output order follows Starship convention:
 #   unmerged(=) · stash($) · deleted(✘) · renamed(») · modified(!) · added(+) · untracked(?) · ahead(⇡) · behind(⇣)
-_git_prompt_status() {
+git_prompt_status() {
   # Exit immediately if we are not inside a git repo.
   # 'git rev-parse --git-dir' locates the .git directory; we discard its output.
   git rev-parse --git-dir &>/dev/null || return 0

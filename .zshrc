@@ -47,9 +47,8 @@ ZSH_THEME_GIT_PROMPT_DIVERGED="%F{red}⇡"
 
 # Git prompt
 setopt prompt_subst
-# PROMPT='%1~$(git_prompt_info)$(git_prompt_status) %# '  # oh-my-zsh functions
 source "$HOME/.zsh_git_prompt"
-PROMPT='%1~$(_git_prompt_info)$(_git_prompt_status) %# '
+PROMPT='%1~$(git_prompt_info)$(git_prompt_status) %# '
 
 # Fish-like autosuggestions — suggests commands from history as you type (grey ghost text).
 # Accept with → or End. Installed via: brew install zsh-autosuggestions
