@@ -27,6 +27,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 FILES=(
     ".gitconfig"
     ".zprofile"
+    ".tool-versions"
     ".claude/settings.json"
     ".claude/statusline-command.sh"
 )
