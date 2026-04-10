@@ -1,15 +1,15 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help setup setup-dry keys keys-dry \
+.PHONY: help setup setup-dry keys keys-dry secrets secrets-dry \
         push push-dry push-restore push-clean \
         pull pull-dry
 
 # ─── trailing argument capture ───────────────────────────────────────────────
 #
 # Allows passing filenames directly after push/pull targets:
-#   make push .zshrc            → ./push.sh .zshrc
-#   make push-dry .zshrc        → ./push.sh --dry-run .zshrc
-#   make pull .gitconfig        → ./pull.sh .gitconfig
+#   make push .zshrc            → ./scripts/push.sh .zshrc
+#   make push-dry .zshrc        → ./scripts/push.sh --dry-run .zshrc
+#   make pull .gitconfig        → ./scripts/pull.sh .gitconfig
 #
 # How it works:
 #   $(MAKECMDGOALS) contains all targets passed on the command line.
@@ -39,35 +39,41 @@ help: ## Show this help
 ##@ Bootstrap
 
 setup: ## Run full machine bootstrap
-	./setup.sh
+	./scripts/setup.sh
 
 setup-dry: ## Preview bootstrap without making any changes
-	./setup.sh --dry-run
+	./scripts/setup.sh --dry-run
 
 keys: ## Deploy SSH and GPG configs to $$HOME
-	./setup-keys.sh
+	./scripts/setup-keys.sh
 
 keys-dry: ## Preview SSH/GPG deployment without deploying
-	./setup-keys.sh --dry-run
+	./scripts/setup-keys.sh --dry-run
+
+secrets: ## Initialize $$HOME/.zsh_secrets from .env.example
+	./scripts/init-secrets.sh
+
+secrets-dry: ## Preview secrets initialization without writing files
+	./scripts/init-secrets.sh --dry-run
 
 ##@ Dotfiles — push (repo → $$HOME)
 
 push: ## Apply all dotfiles, or a specific file: make push .zshrc
-	./push.sh $(or $(PUSH_ARGS),--all)
+	./scripts/push.sh $(or $(PUSH_ARGS),--all)
 
 push-dry: ## Preview changes without applying: make push-dry .zshrc
-	./push.sh --dry-run $(or $(PUSH_ARGS),--all)
+	./scripts/push.sh --dry-run $(or $(PUSH_ARGS),--all)
 
 push-restore: ## Restore most recent backup for all files
-	./push.sh --restore --all
+	./scripts/push.sh --restore --all
 
 push-clean: ## Delete all backups
-	./push.sh --clean --all
+	./scripts/push.sh --clean --all
 
 ##@ Dotfiles — pull ($$HOME → repo)
 
 pull: ## Capture all dotfiles, or a specific file: make pull .gitconfig
-	./pull.sh $(or $(PULL_ARGS),--all)
+	./scripts/pull.sh $(or $(PULL_ARGS),--all)
 
 pull-dry: ## Preview capture without pulling: make pull-dry .gitconfig
-	./pull.sh --dry-run $(or $(PULL_ARGS),--all)
+	./scripts/pull.sh --dry-run $(or $(PULL_ARGS),--all)

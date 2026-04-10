@@ -5,8 +5,8 @@
 # an existing config on a machine that's already set up.
 #
 # Usage:
-#   ./setup-keys.sh
-#   ./setup-keys.sh --dry-run    Print all commands without deploying any files.
+#   ./scripts/setup-keys.sh
+#   ./scripts/setup-keys.sh --dry-run    Print all commands without deploying any files.
 
 set -euo pipefail
 # set -e: exit immediately if any command returns non-zero exit code.
@@ -44,10 +44,12 @@ trap 'echo "Error: setup-keys.sh failed at line $LINENO. See output above." >&2'
 # lives, regardless of where it is called from. This makes the script
 # portable — it works from any working directory.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# REPO_DIR is the parent directory of scripts/, where repo-tracked files live.
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Source paths: files as they live in this repo.
-SSH_SOURCE="$SCRIPT_DIR/.ssh/config"
-GPG_SOURCE="$SCRIPT_DIR/.gnupg/gpg-agent.conf"
+SSH_SOURCE="$REPO_DIR/.ssh/config"
+GPG_SOURCE="$REPO_DIR/.gnupg/gpg-agent.conf"
 
 # Destination paths: where the files need to go in $HOME.
 SSH_DEST="$HOME/.ssh/config"

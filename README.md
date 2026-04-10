@@ -14,15 +14,15 @@ Opinionated macOS developer environment managed via Homebrew and asdf — shell,
 git clone https://github.com/avelinoschz/dotfiles.git ~/dotfiles && cd ~/dotfiles
 
 # 2. Bootstrap the machine (see what it installs below)
-./setup.sh
+./scripts/setup.sh
 ```
 
-`setup.sh` handles everything end-to-end: Xcode CLI tools, Homebrew, all packages and apps, asdf runtimes, Claude Code, VS Code extensions, SSH/GPG config deployment, and dotfiles. No manual steps required after step 2.
+`scripts/setup.sh` handles everything end-to-end: Xcode CLI tools, Homebrew, all packages and apps, asdf runtimes, Claude Code, VS Code extensions, SSH/GPG config deployment, and dotfiles. No manual steps required after step 2.
 
 Preview what will run before committing:
 
 ```bash
-./setup.sh --dry-run
+./scripts/setup.sh --dry-run
 ```
 
 ## What setup.sh installs
@@ -45,16 +45,16 @@ All scripts are accessible via `make`. Run `make` or `make help` to see availabl
 `push`, `pull`, `push-dry` and `pull-dry` accept an optional filename to scope the operation to a single file:
 
 ```bash
-make push .zshrc          # → ./push.sh .zshrc
-make push-dry .zshrc      # → ./push.sh --dry-run .zshrc
-make pull .gitconfig      # → ./pull.sh .gitconfig
+make push .zshrc          # → ./scripts/push.sh .zshrc
+make push-dry .zshrc      # → ./scripts/push.sh --dry-run .zshrc
+make pull .gitconfig      # → ./scripts/pull.sh .gitconfig
 ```
 
 `push-restore` and `push-clean` only operate on all files. For file-specific restore or clean, use the scripts directly — they expose the full set of flags:
 
 ```bash
-./push.sh --restore .zprofile
-./push.sh --clean .zshrc
+./scripts/push.sh --restore .zprofile
+./scripts/push.sh --clean .zshrc
 ```
 
 ```text
@@ -65,6 +65,8 @@ Bootstrap
   setup-dry        Preview bootstrap without making any changes
   keys             Deploy SSH and GPG configs to $HOME
   keys-dry         Preview SSH/GPG deployment without deploying
+  secrets          Initialize $HOME/.zsh_secrets from .env.example
+  secrets-dry      Preview secrets initialization without writing files
 
 Dotfiles — push (repo → $HOME)
   push             Apply all dotfiles, or a specific file: make push .zshrc
@@ -81,38 +83,57 @@ Dotfiles — pull ($HOME → repo)
 
 | Script | Description |
 | ------ | ----------- |
-| `setup.sh` | Full machine bootstrap. Supports `--dry-run` to preview without installing. |
-| `setup-keys.sh` | Deploy SSH and GPG config files from the repo to `$HOME`. Supports `--dry-run`. |
-| `push.sh` | Apply dotfiles from repo to `$HOME`. Shows diff and asks confirmation per file. Supports `--dry-run`. |
-| `pull.sh` | Capture dotfiles from `$HOME` into the repo. Shows diff and asks confirmation per file. Supports `--dry-run`. |
+| `scripts/setup.sh` | Full machine bootstrap. Supports `--dry-run` to preview without installing. |
+| `scripts/setup-keys.sh` | Deploy SSH and GPG config files from the repo to `$HOME`. Supports `--dry-run`. |
+| `scripts/init-secrets.sh` | Initialize `~/.zsh_secrets` from `.env.example` without overwriting existing values. Supports `--dry-run`. |
+| `scripts/push.sh` | Apply dotfiles from repo to `$HOME`. Shows diff and asks confirmation per file. Supports `--dry-run`. |
+| `scripts/pull.sh` | Capture dotfiles from `$HOME` into the repo. Shows diff and asks confirmation per file. Supports `--dry-run`. |
 
 ### Dry run
 
 All scripts support `--dry-run` (or `-n`) — prints every command that would run without executing anything:
 
 ```bash
-./setup.sh --dry-run
-./setup-keys.sh --dry-run
-./push.sh --dry-run --all
-./pull.sh --dry-run --all
+./scripts/setup.sh --dry-run
+./scripts/setup-keys.sh --dry-run
+./scripts/init-secrets.sh --dry-run
+./scripts/push.sh --dry-run --all
+./scripts/pull.sh --dry-run --all
 ```
+
+### Secrets
+
+Use `.env.example` as documentation for variables required by your dotfiles.
+
+```bash
+# Create ~/.zsh_secrets if missing and append any missing variables
+./scripts/init-secrets.sh
+
+# Then edit your local secrets file and set real values
+nvim ~/.zsh_secrets
+
+# Reload shell config
+source ~/.zshrc
+```
+
+`~/.zsh_secrets` is local-only and must never be committed.
 
 ### push.sh
 
 ```bash
 # Apply all tracked dotfiles to $HOME
-./push.sh --all
+./scripts/push.sh --all
 
 # Apply a single file
-./push.sh .zshrc
+./scripts/push.sh .zshrc
 
 # Restore the most recent backup
-./push.sh --restore --all
-./push.sh --restore .zshrc
+./scripts/push.sh --restore --all
+./scripts/push.sh --restore .zshrc
 
 # List and delete all backups
-./push.sh --clean --all
-./push.sh --clean .zshrc
+./scripts/push.sh --clean --all
+./scripts/push.sh --clean .zshrc
 ```
 
 Backups are saved as `~/<file>.bak.YYYYMMDD_HHMMSS` on every apply.
@@ -122,10 +143,10 @@ Backups are saved as `~/<file>.bak.YYYYMMDD_HHMMSS` on every apply.
 
 ```bash
 # Capture all tracked dotfiles from $HOME into the repo
-./pull.sh --all
+./scripts/pull.sh --all
 
 # Capture a single file
-./pull.sh .zprofile
+./scripts/pull.sh .zprofile
 ```
 
 ## Tracked files

@@ -73,5 +73,5 @@ This requires an internet connection and takes ~1 minute. Subsequent launches ar
 Tracked in `push.sh` — edit in the repo, apply with:
 
 ```bash
-./push.sh .config/nvim/init.lua
+./scripts/push.sh .config/nvim/init.lua
 ```

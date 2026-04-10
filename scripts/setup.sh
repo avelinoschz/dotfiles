@@ -4,8 +4,8 @@
 # Run this script once on a fresh macOS install.
 #
 # Usage:
-#   ./setup.sh
-#   ./setup.sh --dry-run    Print all commands without executing them.
+#   ./scripts/setup.sh
+#   ./scripts/setup.sh --dry-run    Print all commands without executing them.
 
 set -euo pipefail
 # set -e: exit immediately if any command returns non-zero exit code.
@@ -38,6 +38,8 @@ run_cmd() {
 trap 'echo "Error: setup.sh failed at line $LINENO. See output above." >&2' ERR
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# REPO_DIR is the parent directory of scripts/, where repo-tracked files live.
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 SUMMARY=()
 SUMMARY_DETAILS=()  # parallel array: one detail string per SUMMARY entry (empty = no sub-bullets)
@@ -86,6 +88,10 @@ fi
 # Sync the formula database before installing to avoid stale cached versions.
 run_cmd brew update
 
+# Add the official OpenCode tap before installing formulae so brew resolves
+# anomalyco/tap/opencode instead of the slower-moving homebrew-core formula.
+run_cmd brew tap anomalyco/tap
+
 SUMMARY+=("Homebrew configured")
 SUMMARY_DETAILS+=("")
 
@@ -113,10 +119,10 @@ run_cmd brew install asdf
 # dev and ai cli tools
 run_cmd brew install gh
 run_cmd brew install gemini-cli
-run_cmd brew install opencode
+run_cmd brew install anomalyco/tap/opencode
 
 SUMMARY+=("Brew formulae installed")
-SUMMARY_DETAILS+=("bat, fastfetch, git, gnupg, mole, neovim, pinentry-mac, tmux, tree, zsh-autosuggestions, zsh-syntax-highlighting, asdf, gh, gemini-cli, opencode")
+SUMMARY_DETAILS+=("bat, fastfetch, git, gnupg, mole, neovim, pinentry-mac, tmux, tree, zsh-autosuggestions, zsh-syntax-highlighting, asdf, gh, gemini-cli, anomalyco/tap/opencode")
 
 # ─── brew casks ──────────────────────────────────────────────────────────────
 
@@ -144,10 +150,11 @@ run_cmd brew install --cask github
 run_cmd brew install --cask claude
 run_cmd brew install --cask chatgpt
 run_cmd brew install --cask codex
+run_cmd brew install --cask codex-app
 run_cmd brew install --cask copilot-cli
 
 SUMMARY+=("Brew casks installed")
-SUMMARY_DETAILS+=("ghostty, visual-studio-code, sublime-text, cursor, goland, pycharm, clion, tableplus, bruno, docker-desktop, github, claude, chatgpt, codex, copilot-cli")
+SUMMARY_DETAILS+=("ghostty, visual-studio-code, sublime-text, cursor, goland, pycharm, clion, tableplus, bruno, docker-desktop, github, claude, chatgpt, codex, codex-app, copilot-cli")
 
 # ─── asdf ────────────────────────────────────────────────────────────────────
 
@@ -173,9 +180,9 @@ fi
 # In dry-run mode the guards are skipped — same rationale as above.
 # Versions are read from .tool-versions — that file is the single source of truth.
 # Update versions there and setup.sh picks them up automatically.
-PYTHON_VERSION=$(grep "^python"  "$SCRIPT_DIR/.tool-versions" | awk '{print $2}')
-NODEJS_VERSION=$(grep "^nodejs"  "$SCRIPT_DIR/.tool-versions" | awk '{print $2}')
-GOLANG_VERSION=$(grep "^golang"  "$SCRIPT_DIR/.tool-versions" | awk '{print $2}')
+PYTHON_VERSION=$(grep "^python"  "$REPO_DIR/.tool-versions" | awk '{print $2}')
+NODEJS_VERSION=$(grep "^nodejs"  "$REPO_DIR/.tool-versions" | awk '{print $2}')
+GOLANG_VERSION=$(grep "^golang"  "$REPO_DIR/.tool-versions" | awk '{print $2}')
 
 if [ "$DRY_RUN" -eq 1 ] || ! asdf list python 2>/dev/null | grep -q "$PYTHON_VERSION"; then
     run_cmd asdf install python "$PYTHON_VERSION"
@@ -226,14 +233,14 @@ echo "==> VS Code extensions"
 # Install VS Code extensions from the tracked list.
 # Each line in vscode-extensions.txt is one extension ID (e.g. golang.go).
 # --force ensures the latest version is installed even if already present.
-if command -v code &>/dev/null && [ -f "$SCRIPT_DIR/vscode-extensions.txt" ]; then
+if command -v code &>/dev/null && [ -f "$REPO_DIR/vscode-extensions.txt" ]; then
     ext_names=()
     while IFS= read -r ext; do
         # Skip blank lines and comments (lines starting with #)
         [[ -z "$ext" || "$ext" == \#* ]] && continue
         run_cmd code --install-extension "$ext" --force
         ext_names+=("$ext")
-    done < "$SCRIPT_DIR/vscode-extensions.txt"
+    done < "$REPO_DIR/vscode-extensions.txt"
     SUMMARY+=("VS Code extensions installed: ${#ext_names[@]}")
     SUMMARY_DETAILS+=("$(IFS=', '; echo "${ext_names[*]}")")
 fi

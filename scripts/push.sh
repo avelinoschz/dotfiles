@@ -4,14 +4,14 @@
 # Requires explicit scope: --all or one or more filenames.
 #
 # Usage:
-#   ./push.sh --all
-#   ./push.sh .zshrc .zprofile
-#   ./push.sh --restore --all
-#   ./push.sh --restore .zprofile
-#   ./push.sh --clean --all
-#   ./push.sh --clean .zprofile
-#   ./push.sh --dry-run --all
-#   ./push.sh --dry-run .zshrc
+#   ./scripts/push.sh --all
+#   ./scripts/push.sh .zshrc .zprofile
+#   ./scripts/push.sh --restore --all
+#   ./scripts/push.sh --restore .zprofile
+#   ./scripts/push.sh --clean --all
+#   ./scripts/push.sh --clean .zprofile
+#   ./scripts/push.sh --dry-run --all
+#   ./scripts/push.sh --dry-run .zshrc
 #
 # Flag compatibility:
 #   --dry-run is only valid with the default push mode. It cannot be combined
@@ -22,11 +22,13 @@
 
 # SCRIPT_DIR resolves the absolute path of the directory where this script
 # lives, regardless of where it is called from.
-# - $0          : path to this script (e.g. ./push.sh or /some/path/push.sh)
+# - $0          : path to this script (e.g. ./scripts/push.sh or /some/path/push.sh)
 # - dirname "$0": the directory part of that path
 # - cd ... && pwd: enter that directory and print its absolute path
 # The $(...) syntax runs a command and captures its output as a string.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# REPO_DIR is the parent directory of scripts/, where repo-tracked files live.
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 # FILES is a bash array listing all dotfiles this repo manages.
 # Each entry is a path relative to $HOME (and relative to this repo's root).
@@ -116,7 +118,7 @@ if [ "$MODE" = "push" ]; then
     # We only show/ask about files that have real changes.
     PENDING=()
     for file in "${SCOPE[@]}"; do
-        SOURCE="$SCRIPT_DIR/$file"  # path in this repo
+        SOURCE="$REPO_DIR/$file"    # path in this repo
         DEST="$HOME/$file"          # path in $HOME
 
         # -f checks if a path exists and is a regular file.
@@ -156,7 +158,7 @@ if [ "$MODE" = "push" ]; then
 
     if [ "$DRY_RUN" -eq 1 ]; then
         for file in "${PENDING[@]}"; do
-            SOURCE="$SCRIPT_DIR/$file"
+            SOURCE="$REPO_DIR/$file"
             DEST="$HOME/$file"
 
             if [ -f "$DEST" ]; then
@@ -189,7 +191,7 @@ if [ "$MODE" = "push" ]; then
     any_updated=0
     UPDATED_FILES=()
     for file in "${PENDING[@]}"; do
-        SOURCE="$SCRIPT_DIR/$file"
+        SOURCE="$REPO_DIR/$file"
         DEST="$HOME/$file"
         # Timestamp format: YYYYMMDD_HHMMSS — makes backups sortable by name.
         BACKUP="${DEST}.bak.$(date +%Y%m%d_%H%M%S)"

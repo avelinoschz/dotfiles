@@ -4,21 +4,23 @@
 # Requires explicit scope: --all or one or more filenames.
 #
 # Usage:
-#   ./pull.sh --all
-#   ./pull.sh .zprofile
-#   ./pull.sh .zprofile .tool-versions
-#   ./pull.sh --dry-run --all
-#   ./pull.sh --dry-run .zprofile
+#   ./scripts/pull.sh --all
+#   ./scripts/pull.sh .zprofile
+#   ./scripts/pull.sh .zprofile .tool-versions
+#   ./scripts/pull.sh --dry-run --all
+#   ./scripts/pull.sh --dry-run .zprofile
 
 # ─── tracked files ───────────────────────────────────────────────────────────
 
 # SCRIPT_DIR resolves the absolute path of the directory where this script
 # lives, regardless of where it is called from.
-# - $0          : path to this script (e.g. ./pull.sh or /some/path/pull.sh)
+# - $0          : path to this script (e.g. ./scripts/pull.sh or /some/path/pull.sh)
 # - dirname "$0": the directory part of that path
 # - cd ... && pwd: enter that directory and print its absolute path
 # The $(...) syntax runs a command and captures its output as a string.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# REPO_DIR is the parent directory of scripts/, where repo-tracked files live.
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 # FILES is a bash array listing all dotfiles this repo tracks.
 # Each entry is a path relative to $HOME (and relative to this repo's root).
@@ -84,7 +86,7 @@ fi
 PENDING=()
 for file in "${SCOPE[@]}"; do
     src="$HOME/$file"        # source: the live file in $HOME
-    dest="$SCRIPT_DIR/$file" # destination: the copy tracked in this repo
+    dest="$REPO_DIR/$file"   # destination: the copy tracked in this repo
 
     # -f checks if a path exists and is a regular file.
     if [ ! -f "$src" ]; then
@@ -129,7 +131,7 @@ echo ""
 if [ "$DRY_RUN" -eq 1 ]; then
     for file in "${PENDING[@]}"; do
         src="$HOME/$file"
-        dest="$SCRIPT_DIR/$file"
+        dest="$REPO_DIR/$file"
 
         if [ -f "$dest" ]; then
             diff_left="$dest"
@@ -164,7 +166,7 @@ UPDATED_FILES=()
 
 for file in "${PENDING[@]}"; do
     src="$HOME/$file"
-    dest="$SCRIPT_DIR/$file"
+    dest="$REPO_DIR/$file"
 
     # If dest doesn't exist yet in the repo (new file being tracked for the
     # first time), diff against /dev/null so it shows the full file as added
