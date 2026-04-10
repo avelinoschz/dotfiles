@@ -6,6 +6,11 @@ typeset -U path
 export PATH="$HOME/.local/bin:$PATH"
 # asdf — added by asdf getting started guide
 export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+# Load private environment variables from a local, untracked file.
+# This keeps API keys out of the repo while still making them available to tools.
+if [ -f "$HOME/.zsh_secrets" ]; then
+  source "$HOME/.zsh_secrets"
+fi
 
 # Completions — load and initialize zsh's completion system.
 # autoload -Uz loads the function without executing it; compinit activates it.
