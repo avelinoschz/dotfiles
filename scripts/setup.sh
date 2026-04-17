@@ -225,6 +225,39 @@ elif ! command -v claude &>/dev/null; then
     SUMMARY_DETAILS+=("")
 fi
 
+# ─── cursor cli ──────────────────────────────────────────────────────────────
+
+echo ""
+echo "==> Cursor CLI"
+
+# Install via the native installer (https://cursor.com/docs/cli/installation) instead
+# of `brew install --cask cursor-cli` — same rationale as Claude Code: use the
+# vendor-supported install path. The documented binary is `agent`, typically under
+# ~/.local/bin. Ensure ~/.local/bin is in your PATH (the installer may add it).
+#
+# `agent` is a generic name; if another tool shadows it earlier in PATH, the guard
+# below may skip install incorrectly — verify with `command -v agent` when unsure.
+#
+# To uninstall:
+#   rm -f ~/.local/bin/agent
+#   # remove any other symlinks the installer created in ~/.local/bin (see ls)
+#   Optional: remove data under ~/.local/share if the installer created dirs there
+#   (check contents first), analogous to ~/.local/share/claude.
+# Do not remove ~/.cursor unless you intend to wipe Cursor IDE settings too — it is
+# shared with the desktop app installed via Homebrew cask `cursor`.
+# If you added PATH="$HOME/.local/bin:$PATH" only for this CLI, remove that line from
+# your shell rc.
+# The curl expansion must be deferred — same dry-run rationale as Claude Code above.
+if [ "$DRY_RUN" -eq 1 ]; then
+    echo "[dry-run] curl https://cursor.com/install -fsS | bash"
+    SUMMARY+=("Cursor CLI installed")
+    SUMMARY_DETAILS+=("")
+elif ! command -v agent &>/dev/null; then
+    curl https://cursor.com/install -fsS | bash
+    SUMMARY+=("Cursor CLI installed")
+    SUMMARY_DETAILS+=("")
+fi
+
 # ─── vscode extensions ───────────────────────────────────────────────────────
 
 echo ""
