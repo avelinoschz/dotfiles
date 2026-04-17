@@ -30,6 +30,9 @@ FILES=(
     ".gitconfig"
     ".zprofile"
     ".tool-versions"
+    ".config/opencode/opencode.json"
+    ".config/opencode/AGENTS.md"
+    ".agents/skills/context7-mcp/SKILL.md"
     ".claude/settings.json"
     ".claude/statusline-command.sh"
 )

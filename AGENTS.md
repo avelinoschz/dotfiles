@@ -83,7 +83,7 @@ When adding anything to `.zshrc`, place it in the optimal position prioritizing 
 
 - Reverse direction: captures current state from `$HOME` into the dotfiles repo.
 - Operates on a list defined in `FILES=()` — add entries there to pull more files.
-- Currently pulls: `.gitconfig`, `.zprofile`, `.tool-versions`, `.claude/settings.json`, `.claude/statusline-command.sh`.
+- Currently pulls: `.gitconfig`, `.zprofile`, `.tool-versions`, `.config/opencode/opencode.json`, `.config/opencode/AGENTS.md`, `.agents/skills/context7-mcp/SKILL.md`, `.claude/settings.json`, `.claude/statusline-command.sh`.
 - No backup needed on the repo side — git history is the safety net.
 - Files tracked here are **managed automatically by their respective tools** (e.g. git, Claude) — the owner does not edit them by hand. The repo copy exists only to preserve them across machines.
 - If a new dotfile fits this profile (a tool writes/updates it, not the owner directly), extend the `FILES=()` array in `pull.sh`.

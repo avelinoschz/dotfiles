@@ -168,6 +168,9 @@ Backups are saved as `~/<file>.bak.YYYYMMDD_HHMMSS` on every apply.
 | ---- | ----------- |
 | `.gitconfig` | Git user config, signing key, LFS filters |
 | `.zprofile` | Login shell config |
+| `.config/opencode/opencode.json` | OpenCode global configuration |
+| `.config/opencode/AGENTS.md` | OpenCode global agent rules |
+| `.agents/skills/context7-mcp/SKILL.md` | Context7 MCP skill configuration |
 | `.claude/settings.json` | Claude Code settings |
 | `.claude/statusline-command.sh` | Claude Code statusline script |
 
